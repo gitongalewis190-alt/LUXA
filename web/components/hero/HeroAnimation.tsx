@@ -3,12 +3,10 @@
 import { useEffect, useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, useReducedMotion, useMotionValue, useTransform, animate } from 'framer-motion';
-import { useAuth } from '../../lib/hooks/useAuth';
+import { motion, useReducedMotion, useMotionValue, animate } from 'framer-motion';
 
 const SPRING = { type: 'spring' as const, stiffness: 60, damping: 15 };
 
-// Particle system for dust effects
 interface Particle {
   id: number;
   x: number;
@@ -21,7 +19,6 @@ interface Particle {
 }
 
 export function HeroAnimation() {
-  const { user } = useAuth();
   const [mounted, setMounted] = useState(false);
   const [particles, setParticles] = useState<Particle[]>([]);
   const prefersReduced = useReducedMotion();
@@ -33,7 +30,6 @@ export function HeroAnimation() {
     setMounted(true);
   }, []);
 
-  // Realistic wheel rotation with physics
   useEffect(() => {
     if (prefersReduced) return;
 
@@ -46,13 +42,11 @@ export function HeroAnimation() {
     return () => controls.stop();
   }, [wheelRotation, prefersReduced]);
 
-  // Dust particle generation as wheel rotates
   useEffect(() => {
     const unsubscribe = wheelRotation.on('change', (latest) => {
       if (prefersReduced) return;
 
-      // Generate dust particles periodically based on rotation speed
-      const particleSpawnRate = Math.abs(Math.sin(latest * Math.PI / 180)) * 0.5;
+      const particleSpawnRate = Math.abs(Math.sin((latest * Math.PI) / 180)) * 0.5;
       if (Math.random() < particleSpawnRate) {
         const angle = Math.random() * Math.PI * 2;
         const distance = 160 + Math.random() * 20;
@@ -70,7 +64,7 @@ export function HeroAnimation() {
             opacity: 0.6,
             size: 2 + Math.random() * 4,
           });
-          return newParticles.slice(-100); // Keep max 100 particles
+          return newParticles.slice(-100);
         });
       }
     });
@@ -78,7 +72,6 @@ export function HeroAnimation() {
     return () => unsubscribe();
   }, [wheelRotation, prefersReduced]);
 
-  // Particle physics simulation
   useEffect(() => {
     const simulate = () => {
       setParticles((prev) =>
@@ -87,8 +80,8 @@ export function HeroAnimation() {
             ...p,
             x: p.x + p.vx,
             y: p.y + p.vy,
-            vy: p.vy + 0.15, // gravity
-            vx: p.vx * 0.98, // air resistance
+            vy: p.vy + 0.15,
+            vx: p.vx * 0.98,
             life: p.life - 0.02,
             opacity: p.opacity * 0.95,
           }))
@@ -114,7 +107,6 @@ export function HeroAnimation() {
       className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950"
       aria-label="LUXA Platform"
     >
-      {/* Background glow */}
       <div className="absolute inset-0 pointer-events-none">
         <div
           className="absolute top-0 left-1/4 w-96 h-96 rounded-full opacity-20 blur-3xl"
@@ -126,17 +118,13 @@ export function HeroAnimation() {
         />
       </div>
 
-      {/* Content wrapper */}
       <div className="relative z-10 w-full max-w-6xl mx-auto px-6 flex flex-col items-center justify-center min-h-screen">
-
-        {/* Wheel with dust particles */}
         <motion.div
           className="mb-16 relative"
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, ...SPRING }}
         >
-          {/* Particle rendering */}
           <div className="absolute inset-0 w-96 h-96 md:w-[450px] md:h-[450px] pointer-events-none">
             {particles.map((particle) => (
               <div
@@ -155,27 +143,20 @@ export function HeroAnimation() {
             ))}
           </div>
 
-          {/* Rotating wheel — upload your image here */}
           <motion.div
             className="w-80 h-80 md:w-[450px] md:h-[450px] relative"
             style={{ rotate: wheelRotation }}
           >
             <div className="w-full h-full relative rounded-full overflow-hidden shadow-2xl border border-slate-600 bg-gradient-to-br from-slate-700 to-slate-800">
-              {/* Image placeholder — replace with your uploaded wheel/logo */}
               <Image
-                src="/images/hero-tire.jpg"
+                src="/LUXA/images/hero-tire.jpg"
                 alt="LUXA Wheel"
                 fill
                 priority
                 quality={95}
                 className="object-cover object-center"
-                onError={(e) => {
-                  // Fallback if image missing
-                  console.warn('Wheel image not found, using placeholder');
-                }}
               />
 
-              {/* Placeholder circles if image fails */}
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-3/4 h-3/4 bg-gradient-to-br from-slate-600 to-slate-700 rounded-full flex items-center justify-center border border-slate-500">
                   <span className="text-white/40 text-2xl font-display">LUXA</span>
@@ -183,7 +164,6 @@ export function HeroAnimation() {
               </div>
             </div>
 
-            {/* Glow halo around wheel (reacts to dust) */}
             <div
               className="absolute inset-0 rounded-full opacity-40 blur-2xl"
               style={{
@@ -193,7 +173,6 @@ export function HeroAnimation() {
             />
           </motion.div>
 
-          {/* Speed lines / motion blur accent */}
           <div className="absolute inset-0 pointer-events-none">
             {[0, 1, 2].map((i) => (
               <div
@@ -214,7 +193,6 @@ export function HeroAnimation() {
           </div>
         </motion.div>
 
-        {/* Heading */}
         <motion.h1
           className="text-5xl md:text-6xl lg:text-7xl font-display font-bold text-center mb-6 text-white"
           initial={{ opacity: 0, y: 20 }}
@@ -224,7 +202,6 @@ export function HeroAnimation() {
           LUXA
         </motion.h1>
 
-        {/* Subtitle */}
         <motion.p
           className="text-xl md:text-2xl text-slate-300 text-center mb-12 max-w-2xl leading-relaxed"
           initial={{ opacity: 0, y: 20 }}
@@ -234,48 +211,27 @@ export function HeroAnimation() {
           Advanced Vehicle Innovation Platform
         </motion.p>
 
-        {/* Auth navigation buttons */}
         <motion.div
           className="flex flex-col sm:flex-row gap-4 justify-center"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6, ...SPRING }}
         >
-          {user ? (
-            <>
-              <Link
-                href="/dashboard"
-                className="px-8 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors"
-              >
-                View Account
-              </Link>
-              <Link
-                href="/browse"
-                className="px-8 py-3 rounded-lg bg-slate-700 hover:bg-slate-600 text-white font-semibold transition-colors"
-              >
-                Browse
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link
-                href="/signup"
-                className="px-8 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors"
-              >
-                Sign Up
-              </Link>
-              <Link
-                href="/login"
-                className="px-8 py-3 rounded-lg bg-slate-700 hover:bg-slate-600 text-white font-semibold transition-colors"
-              >
-                Log In
-              </Link>
-            </>
-          )}
+          <Link
+            href="/signup"
+            className="px-8 py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold transition-colors"
+          >
+            Sign Up
+          </Link>
+          <Link
+            href="/login"
+            className="px-8 py-3 rounded-lg bg-slate-700 hover:bg-slate-600 text-white font-semibold transition-colors"
+          >
+            Log In
+          </Link>
         </motion.div>
       </div>
 
-      {/* Keyframe animations */}
       <style jsx>{`
         @keyframes spin {
           from { transform: translate(-50%, -50%) rotate(0deg); }

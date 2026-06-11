@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { AdminSignalDetector } from '../components/common/AdminSignalDetector';
 import { HeroAnimation } from '../components/hero/HeroAnimation';
 
 export const metadata: Metadata = {
@@ -10,14 +9,8 @@ export const metadata: Metadata = {
 
 export default function LandingPage() {
   return (
-    <>
-      {/* Invisible admin gesture detector */}
-      <AdminSignalDetector />
-
-      <main>
-        {/* Phase 1: Hero with rotating wheel + navigation options */}
-        <HeroAnimation />
-      </main>
-    </>
+    <main className="bg-slate-950">
+      <HeroAnimation />
+    </main>
   );
 }
