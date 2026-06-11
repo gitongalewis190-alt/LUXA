@@ -1,3 +1,8 @@
+// Required for Next.js static export with dynamic routes
+export async function generateStaticParams() {
+  return [];
+}
+
 'use client';
 
 import { useEffect, useState } from 'react';
