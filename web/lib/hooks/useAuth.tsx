@@ -102,8 +102,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         luzaId:    luxaId,
         role:      'member',
         isActive:  true,
-        createdAt: now as ReturnType<typeof serverTimestamp>,
-        updatedAt: now as ReturnType<typeof serverTimestamp>,
+        createdAt: now as any,
+        updatedAt: now as any,
       };
 
       await setDoc(doc(db, COLLECTIONS.USERS, firebaseUser.uid), newUser);
