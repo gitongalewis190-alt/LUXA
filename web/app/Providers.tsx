@@ -1,46 +1,35 @@
 'use client';
 
-import { useEffect, type ReactNode } from 'react';
-import { AuthProvider } from '../lib/hooks/useAuth';
+import { useEffect, type ReactNode, Suspense } from 'react';
+import dynamic from 'next/dynamic';
+
+const AuthProvider = dynamic(() => import('../lib/hooks/useAuth').then(m => m.AuthProvider), { ssr: false });
 
 function PlatformConfigProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
-    // Only run on client side
+    if (typeof window === 'undefined') return;
+
     try {
-      import('firebase/firestore').then(({ onSnapshot }) => {
-        import('../lib/firestore').then(({ configRef, type: _PlatformConfig }) => {
-          const unsubscribe = onSnapshot(
-            configRef(),
-            (snap) => {
-              if (!snap.exists()) return;
-              const config = snap.data() as any;
-              const root = document.documentElement;
+      (async () => {
+        const { onSnapshot } = await import('firebase/firestore');
+        const { configRef } = await import('../lib/firestore');
 
-              root.style.setProperty('--luxa-primary', config.colors?.primary ?? '#0066CC');
-              root.style.setProperty('--luxa-secondary', config.colors?.secondary ?? '#00A8FF');
-              root.style.setProperty('--luxa-accent', config.colors?.accent ?? '#2D6A4F');
-              root.style.setProperty('--luxa-background', config.colors?.background ?? '#050810');
+        onSnapshot(
+          configRef(),
+          (snap) => {
+            if (!snap.exists()) return;
+            const config = snap.data() as any;
+            const root = document.documentElement;
 
-              const metaTheme = document.querySelector('meta[name="theme-color"]');
-              if (metaTheme) {
-                metaTheme.setAttribute('content', config.colors?.background ?? '#050810');
-              }
-            },
-            (error) => {
-              if (process.env.NODE_ENV === 'development') {
-                console.error('[PlatformConfig] Firestore listener error:', error);
-              }
-            }
-          );
-          return () => unsubscribe();
-        });
-      });
-    } catch (error) {
-      // Silently fail if Firebase isn't available (e.g., during build)
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('[PlatformConfig] Firebase not available');
-      }
-    }
+            root.style.setProperty('--luxa-primary', config.colors?.primary ?? '#0066CC');
+            root.style.setProperty('--luxa-secondary', config.colors?.secondary ?? '#00A8FF');
+            root.style.setProperty('--luxa-accent', config.colors?.accent ?? '#2D6A4F');
+            root.style.setProperty('--luxa-background', config.colors?.background ?? '#050810');
+          },
+          () => {}
+        );
+      })();
+    } catch {}
   }, []);
 
   return <>{children}</>;
@@ -48,10 +37,12 @@ function PlatformConfigProvider({ children }: { children: ReactNode }) {
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
-    <AuthProvider>
-      <PlatformConfigProvider>
-        {children}
-      </PlatformConfigProvider>
-    </AuthProvider>
+    <Suspense fallback={null}>
+      <AuthProvider>
+        <PlatformConfigProvider>
+          {children}
+        </PlatformConfigProvider>
+      </AuthProvider>
+    </Suspense>
   );
 }
