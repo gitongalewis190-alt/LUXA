@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   output: 'export',
+  basePath: '/LUXA',
   images: {
     unoptimized: true,
     remotePatterns: [
@@ -18,6 +19,7 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['firebase-admin'],
   },
+  swcMinify: true,
 };
 
 module.exports = nextConfig;
