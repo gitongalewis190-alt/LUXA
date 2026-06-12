@@ -15,8 +15,9 @@
     }
 
     /* ── Scene / Background ──
-       Admin: set data-scene-bg on <body> to override the sky gradient colour stops
-       e.g. <body data-scene-bg="dawn"> and define var(--scene-bg) in a theme block    */
+       Admin: set data-scene-bg on <body> to override background theme.
+       Define your theme by overriding --scene-bg CSS variable, e.g.:
+       body[data-scene-bg="dawn"] { --scene-bg: #your-color; }               */
     .scene {
       position: fixed; inset: 0; z-index: 0; overflow: hidden;
       pointer-events: none;
@@ -74,14 +75,14 @@
     .fwrap input.pad-r{padding-right:46px;}
     .eye{position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(240,244,255,.3);padding:4px;display:flex;transition:color .2s;}
     .eye:hover{color:rgba(240,244,255,.7);}
-    /* WCAG AA focus */
     .eye:focus-visible{outline:2px solid rgba(0,168,255,.7);outline-offset:2px;border-radius:4px;}
     .fwrap input:focus-visible{outline:none;}
 
     /* Forgot link */
-    .forgot-row{display:flex;justify-content:flex-end;margin-top:5px;}
+    .forgot-row{display:flex;justify-content:flex-end;margin-top:6px;}
     .forgot-row a{font-size:12px;color:rgba(0,168,255,.65);text-decoration:none;transition:color .2s;}
     .forgot-row a:hover{color:#00D4FF;}
+    .forgot-row a:focus-visible{outline:2px solid rgba(0,168,255,.7);outline-offset:2px;border-radius:3px;}
 
     /* ── Button ── */
     .btn{width:100%;padding:14px;background:rgba(0,102,204,.9);color:#fff;font-size:15px;font-weight:600;border:1px solid rgba(0,168,255,.35);border-radius:15px;cursor:pointer;font-family:inherit;letter-spacing:.01em;box-shadow:0 4px 24px rgba(0,102,204,.3),inset 0 1px 0 rgba(255,255,255,.15);transition:all .2s cubic-bezier(.16,1,.3,1);display:flex;align-items:center;justify-content:center;gap:9px;margin-top:4px;}
@@ -210,12 +211,12 @@
           <div class="fwrap">
             <input type="password" id="pw" name="pw" class="pad-r"
                    autocomplete="current-password" placeholder="Your password" required />
-            <button type="button" class="eye" id="eye-pw" aria-label="Toggle password visibility">
-              <!-- open eye -->
+            <button type="button" class="eye" id="eye-pw" aria-label="Show password">
+              <!-- open eye (shown by default — password is hidden) -->
               <svg class="si eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
               </svg>
-              <!-- closed eye (hidden) -->
+              <!-- closed eye (shown when password is visible) -->
               <svg class="si eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
                 <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>
               </svg>
@@ -340,8 +341,8 @@
   eyeBtn.addEventListener('click', () => {
     const show = pwEl.type === 'password';
     pwEl.type = show ? 'text' : 'password';
-    eyeBtn.querySelector('.eye-open').style.display  = show ? 'none'  : '';
-    eyeBtn.querySelector('.eye-closed').style.display = show ? ''     : 'none';
+    eyeBtn.querySelector('.eye-open').style.display  = show ? 'none' : '';
+    eyeBtn.querySelector('.eye-closed').style.display = show ? ''    : 'none';
     eyeBtn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
   });
 
@@ -359,8 +360,8 @@
   /* ── Email/password submit ── */
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (hp.value !== '') return; // honeypot
-    if (!FB_CONFIG.apiKey) { toast('Firebase not configured yet.','error'); return; }
+    if (hp.value !== '') return; // honeypot triggered
+    if (!FB_CONFIG.apiKey) { toast('Firebase not configured yet.', 'error'); return; }
 
     const email = emailEl.value.trim();
     const pw    = pwEl.value;
@@ -372,10 +373,10 @@
       const { auth } = await getFirebase();
       const { signInWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
       await signInWithEmailAndPassword(auth, email, pw);
-      toast('Welcome back! Redirecting…','success');
+      toast('Welcome back! Redirecting…', 'success');
       setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
     } catch (err) {
-      toast(FERR[err.code] || err.message || 'Login failed. Try again.','error');
+      toast(FERR[err.code] || err.message || 'Login failed. Try again.', 'error');
       btn.disabled = false;
       btn.textContent = 'Log In';
       validate();
@@ -384,43 +385,43 @@
 
   /* ── Social sign-in helper ── */
   async function socialSignIn(providerId) {
-    if (!FB_CONFIG.apiKey) { toast('Firebase not configured yet.','error'); return; }
+    if (!FB_CONFIG.apiKey) { toast('Firebase not configured yet.', 'error'); return; }
     try {
       const { auth } = await getFirebase();
       const { signInWithPopup, GoogleAuthProvider, OAuthProvider } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
       const { getFirestore, doc, getDoc, setDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
 
       let provider;
-      if (providerId === 'google')    provider = new GoogleAuthProvider();
-      else if (providerId === 'apple') provider = new OAuthProvider('apple.com');
-      else                             provider = new OAuthProvider('microsoft.com');
+      if (providerId === 'google')      provider = new GoogleAuthProvider();
+      else if (providerId === 'apple')  provider = new OAuthProvider('apple.com');
+      else                              provider = new OAuthProvider('microsoft.com');
 
       const result = await signInWithPopup(auth, provider);
       const user   = result.user;
 
       // Create Firestore doc if doesn't exist
-      const db = getFirestore(_app);
+      const db  = getFirestore(_app);
       const ref = doc(db, 'users', user.uid);
       const snap = await getDoc(ref);
       if (!snap.exists()) {
         await setDoc(ref, {
-          uid: user.uid,
-          email: user.email,
-          displayName: user.displayName || '',
-          country: '',
-          luzaId: `luxa_${(user.displayName||'user').toLowerCase().replace(/[^a-z0-9]/g,'_').slice(0,20)}_${user.uid.slice(-6)}`,
-          role: 'member',
-          isActive: true,
+          uid:               user.uid,
+          email:             user.email,
+          displayName:       user.displayName || '',
+          country:           '',
+          luzaId:            `luxa_${(user.displayName||'user').toLowerCase().replace(/[^a-z0-9]/g,'_').slice(0,20)}_${user.uid.slice(-6)}`,
+          role:              'member',
+          isActive:          true,
           recoveryQuestions: [],
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
+          createdAt:         serverTimestamp(),
+          updatedAt:         serverTimestamp(),
         });
       }
 
-      toast('Welcome back! Redirecting…','success');
+      toast('Welcome back! Redirecting…', 'success');
       setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
     } catch (err) {
-      toast(FERR[err.code] || err.message || 'Sign-in failed.','error');
+      toast(FERR[err.code] || err.message || 'Sign-in failed.', 'error');
     }
   }
 
