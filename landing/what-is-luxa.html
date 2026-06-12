@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>What is LUXA? — The Automotive Renaissance</title>
+  <meta name="description" content="LUXA: The next inevitable leap in automotive evolution. A global ecosystem where engineering brilliance, visionary investment, and raw passion converge."/>
+  <meta name="theme-color" content="#05080f"/>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{background:#05080f;color:#F0F4FF;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter','Helvetica Neue',sans-serif;-webkit-font-smoothing:antialiased;}
+
+    /* ── Background ── */
+    .bg{position:fixed;inset:0;z-index:0;
+      background:
+        radial-gradient(ellipse 80vw 60vh at 10% 0%,  rgba(0,102,204,.1)  0%,transparent 65%),
+        radial-gradient(ellipse 70vw 70vh at 90% 80%, rgba(255,107,53,.09) 0%,transparent 65%),
+        radial-gradient(ellipse 50vw 50vh at 50% 40%, rgba(0,50,120,.06)   0%,transparent 70%);
+    }
+
+    /* ── Navbar ── */
+    nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;padding:14px 28px;gap:24px;
+      background:rgba(5,8,15,.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(255,255,255,.07);}
+    .nav-back{display:flex;align-items:center;justify-content:center;width:38px;height:38px;
+      border-radius:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.11);
+      cursor:pointer;color:rgba(240,244,255,.65);text-decoration:none;
+      transition:background .18s,color .18s,transform .18s;flex-shrink:0;}
+    .nav-back:hover{background:rgba(255,255,255,.14);color:#fff;transform:translateX(-2px);}
+    .nav-logo{font-size:20px;font-weight:700;letter-spacing:-.04em;color:#fff;text-decoration:none;}
+    .nav-links{display:flex;gap:24px;list-style:none;}
+    .nav-links a{font-size:13.5px;color:rgba(240,244,255,.48);text-decoration:none;transition:color .2s;}
+    .nav-links a:hover{color:rgba(240,244,255,.9);}
+    .nav-end{margin-left:auto;display:flex;gap:8px;align-items:center;}
+    .nav-cta{padding:8px 18px;border-radius:20px;background:rgba(0,102,204,.7);border:1px solid rgba(0,168,255,.3);
+      color:#fff;font-size:13px;font-weight:600;text-decoration:none;transition:background .2s;}
+    .nav-cta:hover{background:rgba(0,120,235,.9);}
+    @media(max-width:600px){.nav-links{display:none;}}
+
+    /* ── Page ── */
+    .page{position:relative;z-index:1;max-width:760px;margin:0 auto;padding:56px 24px 100px;}
+
+    /* ── Hero headline ── */
+    .manifesto-hero{text-align:center;margin-bottom:64px;padding-bottom:48px;border-bottom:1px solid rgba(255,255,255,.07);}
+    .eyebrow{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+      color:rgba(0,168,255,.75);margin-bottom:18px;}
+    h1.main-title{font-size:clamp(36px,7vw,64px);font-weight:700;letter-spacing:-.04em;line-height:1.08;
+      color:#fff;margin-bottom:24px;}
+    h1.main-title span{
+      background:linear-gradient(135deg,#00A8FF 0%,#FF6B35 100%);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+    .manifesto-intro{font-size:clamp(16px,2vw,19px);line-height:1.7;color:rgba(240,244,255,.62);max-width:600px;margin:0 auto;}
+
+    /* ── Sections ── */
+    .section{margin-bottom:56px;}
+    .section-tag{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+      color:rgba(0,168,255,.6);margin-bottom:12px;}
+    h2{font-size:clamp(22px,3.5vw,32px);font-weight:700;letter-spacing:-.02em;line-height:1.2;
+      color:#fff;margin-bottom:20px;}
+    p{font-size:clamp(15px,1.8vw,17px);line-height:1.75;color:rgba(240,244,255,.62);margin-bottom:18px;}
+    p:last-child{margin-bottom:0;}
+    strong{color:rgba(240,244,255,.85);font-weight:600;}
+
+    /* ── Pillars ── */
+    .pillars{display:flex;flex-direction:column;gap:20px;margin-top:8px;}
+    .pillar{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;
+      padding:28px 28px;transition:border-color .25s,background .25s;}
+    .pillar:hover{background:rgba(255,255,255,.06);border-color:rgba(0,168,255,.2);}
+    .pillar-num{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+      color:rgba(0,168,255,.65);margin-bottom:10px;}
+    .pillar h3{font-size:18px;font-weight:700;letter-spacing:-.02em;color:#fff;margin-bottom:12px;}
+    .pillar p{font-size:15px;margin-bottom:12px;}
+    .pillar ul{list-style:none;display:flex;flex-direction:column;gap:8px;}
+    .pillar ul li{font-size:14.5px;line-height:1.6;color:rgba(240,244,255,.58);padding-left:18px;position:relative;}
+    .pillar ul li::before{content:'→';position:absolute;left:0;color:rgba(0,168,255,.6);font-size:12px;}
+
+    /* ── Why CTA ── */
+    .why-cta{margin-top:56px;padding:40px 36px;border-radius:22px;text-align:center;
+      background:linear-gradient(135deg,rgba(0,60,140,.25),rgba(80,20,60,.25));
+      border:1px solid rgba(255,255,255,.1);}
+    .why-cta h2{margin-bottom:14px;}
+    .why-cta p{max-width:480px;margin:0 auto 28px;}
+    .why-cta .cta-row{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;}
+    .btn-a{padding:14px 32px;border-radius:14px;font-size:15px;font-weight:600;text-decoration:none;transition:all .22s;}
+    .btn-blue{background:rgba(0,102,204,.9);color:#fff;border:1px solid rgba(0,168,255,.35);
+      box-shadow:0 4px 24px rgba(0,102,204,.3);}
+    .btn-blue:hover{background:rgba(0,120,235,.95);transform:translateY(-2px);}
+    .btn-ghost{background:rgba(255,255,255,.07);color:rgba(240,244,255,.8);border:1px solid rgba(255,255,255,.1);}
+    .btn-ghost:hover{background:rgba(255,255,255,.13);transform:translateY(-2px);}
+
+    /* ── Back to top ── */
+    .back-top{display:flex;align-items:center;justify-content:center;margin-top:56px;}
+    .back-top a{display:flex;align-items:center;gap:7px;font-size:13px;color:rgba(240,244,255,.35);
+      text-decoration:none;transition:color .2s;}
+    .back-top a:hover{color:rgba(240,244,255,.7);}
+
+    @media(max-width:600px){.page{padding:36px 18px 80px;}.why-cta{padding:28px 20px;}}
+  </style>
+</head>
+<body>
+<div class="bg"></div>
+
+<nav>
+  <a href="javascript:history.length>1?history.back():location.href='index.html'" class="nav-back" aria-label="Go back">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <a href="index.html" class="nav-logo">LUXA</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="other-companies.html">Companies</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+  </ul>
+  <div class="nav-end">
+    <a href="signup.html" class="nav-cta">Get Started</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <!-- Hero -->
+  <header class="manifesto-hero">
+    <p class="eyebrow">The Manifesto</p>
+    <h1 class="main-title">LUXA:<br/><span>The Automotive Renaissance</span></h1>
+    <p class="manifesto-intro">Every monumental leap in human history began with a single, disruptive idea. The steam engine, the assembly line, the digital revolution — these weren't just mechanical or technological shifts; they were psychological and social awakenings. LUXA is the next inevitable leap.</p>
+  </header>
+
+  <!-- Core Statement -->
+  <section class="section">
+    <p class="section-tag">Who We Are</p>
+    <h2>Welcome to the Core of Automotive Evolution</h2>
+    <p>We are not just building a platform; we are <strong>architecting a global ecosystem</strong> where engineering brilliance, visionary investment, and raw passion converge to redefine how humanity moves.</p>
+    <p>LUXA is a living, breathing nexus for the automotive innovators, the grease-monkey geniuses, the aerodynamic futurists, and the strategic investors who recognise that the future of transport cannot be left to legacy corporations.</p>
+    <p><strong>This is where the blueprint of tomorrow is drafted, shared, and funded today.</strong></p>
+  </section>
+
+  <!-- Vision -->
+  <section id="why" class="section">
+    <p class="section-tag">The Vision</p>
+    <h2>Redefining Humanity's Infrastructure</h2>
+    <p>Movement is the fundamental indicator of progress. The more efficiently, sustainably, and powerfully we can move, the faster humanity evolves. Yet, the current automotive landscape is <strong>fragmented</strong>. Brilliant independent engineers are refining engine efficiencies in isolated garages, while visionary investors are locked out of early-stage breakthroughs by institutional gatekeepers.</p>
+    <p><strong>LUXA shatters these barriers.</strong> Under the leadership of our founder and CEO, <strong>Antonio</strong>, LUXA is designed to catalyse a decentralised automotive revolution. By uniting the minds that build with the capital that scales, we are accelerating the transformation of global vehicular infrastructure from the ground up.</p>
+    <p>What begins as a shared clip of a refined engine part today becomes the global manufacturing standard tomorrow.</p>
+  </section>
+
+  <!-- Ecosystem / Three Pillars -->
+  <section class="section">
+    <p class="section-tag">The Ecosystem</p>
+    <h2>How LUXA Functions</h2>
+    <p>LUXA operates at the intersection of a high-yield investment vehicle and a hyper-focused, high-utility social ecosystem. The platform is structured around three core pillars:</p>
+    <div class="pillars">
+
+      <div class="pillar">
+        <p class="pillar-num">Pillar 01</p>
+        <h3>Direct Equity Integration — Co-Ownership</h3>
+        <p>You are not just a user; you have the opportunity to become an <strong>architect of the company itself</strong>. Upon entering the LUXA ecosystem, individuals can directly purchase shares of the main company.</p>
+        <ul>
+          <li><strong>For the Investor:</strong> Secure, transparent access to a rapidly appreciating asset class tied directly to the growth of the platform.</li>
+          <li><strong>For the Company:</strong> A liquid, decentralised funding model that guarantees security, autonomy, and the capital necessary to scale our global infrastructure without relying on restrictive venture capital.</li>
+        </ul>
+      </div>
+
+      <div class="pillar">
+        <p class="pillar-num">Pillar 02</p>
+        <h3>The Creative Engine — The Project Hub</h3>
+        <p>Think of it as a specialised, high-octane engineering sandbox. LUXA provides an immersive, visual feed where creators, mechanics, and developers showcase their active projects.</p>
+        <ul>
+          <li><strong>Showcase Your Craft:</strong> Whether you are optimising a turbocharger, rewriting ECU telemetry, or designing an aerodynamic chassis — post clean video clips and high-resolution images of your breakthroughs.</li>
+          <li><strong>Crowdsourced Validation:</strong> Peer-review meets public admiration. Your work is instantly visible to a global audience of automotive purists and talent scouts.</li>
+        </ul>
+      </div>
+
+      <div class="pillar">
+        <p class="pillar-num">Pillar 03</p>
+        <h3>Monetisation &amp; Collective Unified Scaling</h3>
+        <p>Brilliance should never go unrewarded. LUXA features <strong>integrated monetisation pathways</strong> that allow creators to turn their intellectual property and viral engineering clips into direct financial capital.</p>
+        <ul>
+          <li>By bringing creators and investors into the same digital room, we facilitate a cycle of constant funding, rapid prototyping, and real-world execution.</li>
+        </ul>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Psychology -->
+  <section class="section">
+    <p class="section-tag">The Psychology</p>
+    <h2>Why We Unite</h2>
+    <p>Human beings are fundamentally wired for two things: <strong>connection</strong> and <strong>contribution</strong>. We desire to be part of something larger than ourselves, and we crave recognition for our unique skills.</p>
+    <p>Legacy social media platforms exploit this psychology for superficial engagement — chasing likes that yield no tangible future. <strong>LUXA flips this paradigm.</strong> We leverage the psychology of collective ambition. Every interaction on LUXA is a step toward a measurable, real-world outcome.</p>
+    <p>You are not scrolling. You are building.</p>
+  </section>
+
+  <!-- CTA -->
+  <div class="why-cta">
+    <h2>Ready to Join the Renaissance?</h2>
+    <p>Become part of the ecosystem redefining how humanity moves. Whether you build, invest, or both — there is a place for you at LUXA.</p>
+    <div class="cta-row">
+      <a href="signup.html" class="btn-a btn-blue">Create Your Account</a>
+      <a href="faq.html"    class="btn-a btn-ghost">Read the FAQ</a>
+    </div>
+  </div>
+
+  <div class="back-top">
+    <a href="#top">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="18 15 12 9 6 15"/></svg>
+      Back to top
+    </a>
+  </div>
+
+</div>
+</body>
+</html>
