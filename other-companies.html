@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Other Companies — LUXA</title>
+  <meta name="description" content="Explore the leading automotive and innovation companies shaping the future of mobility."/>
+  <meta name="theme-color" content="#05080f"/>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    body{background:#05080f;color:#F0F4FF;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter','Helvetica Neue',sans-serif;-webkit-font-smoothing:antialiased;}
+    .bg{position:fixed;inset:0;z-index:0;
+      background:
+        radial-gradient(ellipse 70vw 55vh at 5% 0%,  rgba(0,80,180,.1)  0%,transparent 65%),
+        radial-gradient(ellipse 60vw 60vh at 95% 85%, rgba(200,80,30,.09) 0%,transparent 65%);}
+
+    /* ── Nav ── */
+    nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;padding:14px 28px;gap:20px;
+      background:rgba(5,8,15,.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(255,255,255,.07);}
+    .nav-back{display:flex;align-items:center;justify-content:center;width:38px;height:38px;
+      border-radius:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.11);
+      cursor:pointer;color:rgba(240,244,255,.65);text-decoration:none;
+      transition:background .18s,color .18s,transform .18s;flex-shrink:0;}
+    .nav-back:hover{background:rgba(255,255,255,.14);color:#fff;transform:translateX(-2px);}
+    .nav-logo{font-size:20px;font-weight:700;letter-spacing:-.04em;color:#fff;text-decoration:none;}
+    .nav-links{display:flex;gap:24px;list-style:none;}
+    .nav-links a{font-size:13.5px;color:rgba(240,244,255,.48);text-decoration:none;transition:color .2s;}
+    .nav-links a:hover{color:rgba(240,244,255,.9);}
+    .nav-end{margin-left:auto;}
+    .nav-cta{padding:8px 18px;border-radius:20px;background:rgba(0,102,204,.7);border:1px solid rgba(0,168,255,.3);
+      color:#fff;font-size:13px;font-weight:600;text-decoration:none;transition:background .2s;}
+    .nav-cta:hover{background:rgba(0,120,235,.9);}
+    @media(max-width:600px){.nav-links{display:none;}}
+
+    /* ── Page ── */
+    .page{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:52px 24px 90px;}
+
+    .page-head{margin-bottom:48px;}
+    .eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,168,255,.7);margin-bottom:14px;}
+    h1{font-size:clamp(28px,5vw,44px);font-weight:700;letter-spacing:-.03em;color:#fff;margin-bottom:14px;}
+    .page-sub{font-size:16px;line-height:1.65;color:rgba(240,244,255,.52);max-width:540px;}
+
+    /* ── Admin notice ── */
+    .admin-note{display:flex;align-items:center;gap:10px;padding:12px 16px;margin-bottom:40px;
+      background:rgba(0,120,255,.1);border:1px solid rgba(0,120,255,.2);border-radius:12px;
+      font-size:13px;color:rgba(0,168,255,.8);}
+    .admin-note svg{flex-shrink:0;opacity:.7;}
+
+    /* ── Grid ── */
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+    @media(max-width:480px){.grid{grid-template-columns:repeat(2,1fr);gap:12px;}}
+
+    .company-card{
+      display:flex;flex-direction:column;align-items:center;
+      gap:14px;padding:28px 20px 22px;
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:18px;text-decoration:none;
+      cursor:pointer;transition:background .22s,border-color .22s,transform .22s,box-shadow .22s;
+      position:relative;overflow:hidden;
+    }
+    .company-card::after{
+      content:'';position:absolute;inset:0;border-radius:18px;
+      background:linear-gradient(135deg,rgba(255,255,255,.04),transparent);
+      opacity:0;transition:opacity .22s;
+    }
+    .company-card:hover{
+      background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);
+      transform:translateY(-4px);box-shadow:0 14px 40px rgba(0,0,0,.4);
+    }
+    .company-card:hover::after{opacity:1;}
+    .company-card:active{transform:translateY(-1px);}
+
+    .co-logo{width:64px;height:64px;border-radius:16px;display:flex;align-items:center;
+      justify-content:center;font-size:22px;font-weight:700;letter-spacing:-.02em;color:#fff;
+      flex-shrink:0;overflow:hidden;}
+    .co-logo img{width:100%;height:100%;object-fit:contain;}
+    .co-name{font-size:14px;font-weight:600;color:rgba(240,244,255,.85);text-align:center;line-height:1.3;}
+    .co-ext{display:flex;align-items:center;gap:4px;font-size:11px;color:rgba(240,244,255,.3);margin-top:2px;}
+    .co-ext svg{opacity:.5;}
+
+    /* ── Empty state ── */
+    .empty{text-align:center;padding:64px 20px;color:rgba(240,244,255,.3);}
+    .empty svg{margin:0 auto 16px;display:block;opacity:.25;}
+    .empty p{font-size:15px;line-height:1.6;}
+    .empty small{font-size:12px;opacity:.6;}
+
+    /* ── Disclaimer ── */
+    .disclaimer{margin-top:52px;padding-top:28px;border-top:1px solid rgba(255,255,255,.07);
+      font-size:12.5px;color:rgba(240,244,255,.28);line-height:1.65;}
+    .disclaimer a{color:rgba(0,168,255,.55);text-decoration:none;}
+    .disclaimer a:hover{color:#00A8FF;}
+  </style>
+</head>
+<body>
+<div class="bg"></div>
+
+<nav>
+  <a href="javascript:history.length>1?history.back():location.href='index.html'" class="nav-back" aria-label="Go back">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <a href="index.html" class="nav-logo">LUXA</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="what-is-luxa.html">What is LUXA?</a></li>
+    <li><a href="faq.html">FAQ</a></li>
+  </ul>
+  <div class="nav-end">
+    <a href="signup.html" class="nav-cta">Join LUXA</a>
+  </div>
+</nav>
+
+<div class="page">
+  <header class="page-head">
+    <p class="eyebrow">Industry Landscape</p>
+    <h1>Other Companies</h1>
+    <p class="page-sub">Leading organisations shaping the future of automotive engineering and mobility. Explore the broader ecosystem LUXA operates within.</p>
+  </header>
+
+  <div class="admin-note">
+    <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Admin: edit the <code style="font-family:monospace;background:rgba(255,255,255,.08);padding:1px 5px;border-radius:4px;">COMPANIES</code> array in this file to add or remove entries.
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <p class="disclaimer">
+    All company names, logos, and trademarks are property of their respective owners. LUXA is not affiliated with or endorsed by any of the companies listed above. Links open in a new tab. To update this list, contact the LUXA admin or refer to the <a href="faq.html">FAQ</a>.
+  </p>
+</div>
+
+<script>
+/*
+  ── ADMIN CONFIGURATION ──────────────────────────────────────────────
+  Add, edit or remove entries in the COMPANIES array below.
+  Each entry:
+    name   : display name (required)
+    url    : full URL including https:// (required)
+    color  : brand accent color for the logo avatar (required)
+    logo   : optional image URL — leave "" to use initials avatar
+  ─────────────────────────────────────────────────────────────────────
+*/
+const COMPANIES = [
+  { name: "Tesla",          url: "https://tesla.com",                         color: "#cc0000", logo: "" },
+  { name: "Porsche",        url: "https://porsche.com",                       color: "#c8a050", logo: "" },
+  { name: "Ferrari",        url: "https://ferrari.com",                       color: "#dc143c", logo: "" },
+  { name: "Lamborghini",    url: "https://lamborghini.com",                   color: "#f0a800", logo: "" },
+  { name: "BMW",            url: "https://bmw.com",                           color: "#1c69d4", logo: "" },
+  { name: "Mercedes-Benz",  url: "https://mercedes-benz.com",                 color: "#a0a0a0", logo: "" },
+  { name: "Rolls-Royce",    url: "https://rolls-roycemotorcars.com",          color: "#9b111e", logo: "" },
+  { name: "Aston Martin",   url: "https://astonmartin.com",                   color: "#005f3d", logo: "" },
+  { name: "Bentley",        url: "https://bentleymotors.com",                 color: "#22550a", logo: "" },
+  { name: "McLaren",        url: "https://mclaren.com",                       color: "#ff6600", logo: "" },
+  { name: "Bugatti",        url: "https://bugatti.com",                       color: "#1a3a6e", logo: "" },
+  { name: "Rimac",          url: "https://rimac-automobili.com",              color: "#00b4d8", logo: "" },
+];
+
+function initials(name) {
+  return name.split(/[\s\-]+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+}
+
+function luminance(hex) {
+  const c=hex.replace('#','');
+  const r=parseInt(c.slice(0,2),16)/255,g=parseInt(c.slice(2,4),16)/255,b=parseInt(c.slice(4,6),16)/255;
+  return .2126*r+.7152*g+.0722*b;
+}
+
+const grid=document.getElementById('grid');
+
+if(!COMPANIES.length){
+  grid.outerHTML=`<div class="empty">
+    <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+    <p>No companies added yet.</p>
+    <small>Edit the COMPANIES array in this file to populate this page.</small>
+  </div>`;
+} else {
+  COMPANIES.forEach(co=>{
+    const domain=new URL(co.url).hostname;
+    const textColor=luminance(co.color)>.35?'#111':'#fff';
+    const card=document.createElement('a');
+    card.href=co.url; card.target='_blank'; card.rel='noopener noreferrer';
+    card.className='company-card';
+    card.setAttribute('aria-label',`Visit ${co.name}`);
+    card.innerHTML=`
+      <div class="co-logo" style="background:${co.color};color:${textColor};">
+        ${co.logo?`<img src="${co.logo}" alt="${co.name} logo" loading="lazy" onerror="this.parentNode.textContent='${initials(co.name)}'"/>`
+                 :initials(co.name)}
+      </div>
+      <div>
+        <div class="co-name">${co.name}</div>
+        <div class="co-ext">
+          <svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          ${domain}
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+</script>
+</body>
+</html>

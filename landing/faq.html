@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FAQ — LUXA</title>
+  <meta name="description" content="Frequently asked questions about LUXA — the automotive innovation platform."/>
+  <meta name="theme-color" content="#05080f"/>
+  <style>
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{background:#05080f;color:#F0F4FF;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter','Helvetica Neue',sans-serif;-webkit-font-smoothing:antialiased;}
+    .bg{position:fixed;inset:0;z-index:0;
+      background:
+        radial-gradient(ellipse 65vw 55vh at 8% 5%,  rgba(0,80,180,.1) 0%,transparent 65%),
+        radial-gradient(ellipse 60vw 60vh at 92% 80%, rgba(180,60,30,.09) 0%,transparent 65%);}
+
+    /* ── Nav ── */
+    nav{position:sticky;top:0;z-index:20;display:flex;align-items:center;padding:14px 28px;gap:20px;
+      background:rgba(5,8,15,.72);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+      border-bottom:1px solid rgba(255,255,255,.07);}
+    .nav-back{display:flex;align-items:center;justify-content:center;width:38px;height:38px;
+      border-radius:10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.11);
+      cursor:pointer;color:rgba(240,244,255,.65);text-decoration:none;
+      transition:background .18s,color .18s,transform .18s;flex-shrink:0;}
+    .nav-back:hover{background:rgba(255,255,255,.14);color:#fff;transform:translateX(-2px);}
+    .nav-logo{font-size:20px;font-weight:700;letter-spacing:-.04em;color:#fff;text-decoration:none;}
+    .nav-links{display:flex;gap:24px;list-style:none;}
+    .nav-links a{font-size:13.5px;color:rgba(240,244,255,.48);text-decoration:none;transition:color .2s;}
+    .nav-links a:hover{color:rgba(240,244,255,.9);}
+    .nav-end{margin-left:auto;}
+    .nav-cta{padding:8px 18px;border-radius:20px;background:rgba(0,102,204,.7);border:1px solid rgba(0,168,255,.3);
+      color:#fff;font-size:13px;font-weight:600;text-decoration:none;transition:background .2s;}
+    .nav-cta:hover{background:rgba(0,120,235,.9);}
+    @media(max-width:600px){.nav-links{display:none;}}
+
+    /* ── Page ── */
+    .page{position:relative;z-index:1;max-width:700px;margin:0 auto;padding:52px 24px 90px;}
+    .page-head{margin-bottom:52px;text-align:center;}
+    .eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(0,168,255,.7);margin-bottom:14px;}
+    h1{font-size:clamp(28px,5vw,42px);font-weight:700;letter-spacing:-.03em;color:#fff;margin-bottom:14px;}
+    .page-sub{font-size:16px;line-height:1.65;color:rgba(240,244,255,.5);max-width:480px;margin:0 auto;}
+
+    /* ── Category tabs ── */
+    .cats{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px;}
+    .cat-btn{padding:8px 16px;border-radius:20px;font-size:13px;font-weight:600;
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(240,244,255,.6);
+      cursor:pointer;transition:all .18s;font-family:inherit;}
+    .cat-btn.active,.cat-btn:hover{background:rgba(0,102,204,.7);border-color:rgba(0,168,255,.35);color:#fff;}
+
+    /* ── Accordion ── */
+    .faq-list{display:flex;flex-direction:column;gap:10px;}
+    .faq-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;
+      overflow:hidden;transition:border-color .22s,background .22s;}
+    .faq-item:hover{border-color:rgba(255,255,255,.14);}
+    .faq-item.open{background:rgba(255,255,255,.06);border-color:rgba(0,168,255,.2);}
+
+    .faq-q{display:flex;align-items:center;justify-content:space-between;gap:14px;
+      padding:20px 22px;cursor:pointer;list-style:none;user-select:none;}
+    .faq-q::-webkit-details-marker{display:none;}
+    .faq-qtxt{font-size:15.5px;font-weight:600;color:rgba(240,244,255,.85);line-height:1.4;}
+    .faq-icon{width:22px;height:22px;border-radius:50%;background:rgba(255,255,255,.08);
+      display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .3s,background .2s;}
+    .faq-item.open .faq-icon{transform:rotate(45deg);background:rgba(0,168,255,.2);}
+    .faq-icon svg{opacity:.6;transition:opacity .2s;}
+    .faq-item.open .faq-icon svg{opacity:1;}
+
+    .faq-a{max-height:0;overflow:hidden;transition:max-height .36s cubic-bezier(.16,1,.3,1);}
+    .faq-item.open .faq-a{max-height:600px;}
+    .faq-a-inner{padding:0 22px 22px;font-size:15px;line-height:1.75;color:rgba(240,244,255,.58);}
+    .faq-a-inner a{color:rgba(0,168,255,.8);text-decoration:none;}
+    .faq-a-inner a:hover{color:#00D4FF;}
+    .faq-a-inner strong{color:rgba(240,244,255,.82);font-weight:600;}
+
+    /* ── CTA strip ── */
+    .faq-cta{margin-top:52px;padding:36px 32px;border-radius:20px;text-align:center;
+      background:linear-gradient(135deg,rgba(0,60,140,.22),rgba(80,20,60,.22));
+      border:1px solid rgba(255,255,255,.09);}
+    .faq-cta p{font-size:17px;font-weight:600;color:rgba(240,244,255,.85);margin-bottom:8px;}
+    .faq-cta small{font-size:13.5px;color:rgba(240,244,255,.42);display:block;margin-bottom:22px;}
+    .btn-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+    .btn-a{padding:13px 28px;border-radius:13px;font-size:14px;font-weight:600;text-decoration:none;transition:all .2s;}
+    .btn-blue{background:rgba(0,102,204,.9);color:#fff;border:1px solid rgba(0,168,255,.35);}
+    .btn-blue:hover{background:rgba(0,120,235,.95);transform:translateY(-2px);}
+    .btn-ghost{background:rgba(255,255,255,.07);color:rgba(240,244,255,.75);border:1px solid rgba(255,255,255,.1);}
+    .btn-ghost:hover{background:rgba(255,255,255,.12);transform:translateY(-2px);}
+
+    @media(max-width:560px){.page{padding:36px 16px 80px;}.faq-q{padding:16px 16px;}.faq-a-inner{padding:0 16px 18px;}}
+  </style>
+</head>
+<body>
+<div class="bg"></div>
+
+<nav>
+  <a href="javascript:history.length>1?history.back():location.href='index.html'" class="nav-back" aria-label="Go back">
+    <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+  </a>
+  <a href="index.html" class="nav-logo">LUXA</a>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="what-is-luxa.html">About</a></li>
+    <li><a href="other-companies.html">Companies</a></li>
+  </ul>
+  <div class="nav-end">
+    <a href="signup.html" class="nav-cta">Join LUXA</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <header class="page-head">
+    <p class="eyebrow">Help &amp; Information</p>
+    <h1>Frequently Asked Questions</h1>
+    <p class="page-sub">Everything you need to know about LUXA — the platform, the community, and how to get started.</p>
+  </header>
+
+  <div class="cats" id="cats">
+    <button class="cat-btn active" data-cat="all">All</button>
+    <button class="cat-btn" data-cat="platform">Platform</button>
+    <button class="cat-btn" data-cat="account">Account</button>
+    <button class="cat-btn" data-cat="invest">Investment</button>
+    <button class="cat-btn" data-cat="creators">Creators</button>
+  </div>
+
+  <div class="faq-list" id="faqList"></div>
+
+  <div class="faq-cta">
+    <p>Still have questions?</p>
+    <small>Our team is building the future — reach out and we'll get back to you.</small>
+    <div class="btn-row">
+      <a href="signup.html"     class="btn-a btn-blue">Create Account</a>
+      <a href="what-is-luxa.html" class="btn-a btn-ghost">Read the Manifesto</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const FAQS=[
+  {cat:'platform',q:'What is LUXA?',
+   a:'LUXA is a global automotive innovation ecosystem where engineers, creators, investors, and enthusiasts converge. Think of it as the intersection of a high-utility social platform and a serious investment vehicle — built exclusively for the future of mobility. <a href="what-is-luxa.html">Read the full manifesto →</a>'},
+  {cat:'platform',q:'Who is LUXA for?',
+   a:'LUXA is built for <strong>automotive creators</strong> — engineers, mechanics, tuners, and designers — as well as <strong>investors</strong> who recognise early-stage automotive innovation as an appreciating asset class, and <strong>enthusiasts</strong> who want to be part of the next chapter in mobility.'},
+  {cat:'platform',q:'Who founded LUXA?',
+   a:'LUXA was founded and is led by <strong>Antonio</strong>, who serves as CEO. The platform is designed to catalyse a decentralised automotive revolution by connecting the minds that build with the capital that scales.'},
+  {cat:'platform',q:'What makes LUXA different from other platforms?',
+   a:'Most platforms exploit your attention for superficial engagement. LUXA channels that same psychology toward <strong>collective ambition</strong>. Every action — posting a project, investing in a creator, purchasing equity — has a real, measurable outcome. You are not scrolling. You are building.'},
+  {cat:'invest',q:'Can I invest in LUXA itself?',
+   a:'Yes. One of LUXA\'s three core pillars is <strong>Direct Equity Integration</strong>. Members can directly purchase shares in the main company, giving you transparent, secure access to an appreciating asset class tied to the platform\'s growth — without relying on restrictive venture capital intermediaries.'},
+  {cat:'invest',q:'How does the investment model work?',
+   a:'LUXA uses a <strong>liquid, decentralised funding model</strong>. By enabling members to purchase equity directly, the platform secures its own capital base while giving early members a stake in its growth. Detailed investment terms and processes will be made available upon platform launch.'},
+  {cat:'creators',q:'How do creators make money on LUXA?',
+   a:'LUXA features <strong>integrated monetisation pathways</strong> allowing creators to convert their intellectual property, engineering clips, and project documentation into direct financial capital. By placing creators and investors in the same digital space, LUXA facilitates a cycle of constant funding and rapid prototyping.'},
+  {cat:'creators',q:'What kind of content can I showcase?',
+   a:'Anything automotive and innovation-driven: turbocharger optimisations, ECU telemetry rewrites, aerodynamic chassis design, suspension engineering, electric drivetrain builds, concept renders, and more. High-resolution images and clean video clips are the primary format.'},
+  {cat:'account',q:'Is LUXA free to join?',
+   a:'Creating a LUXA account is free. Specific features — such as equity investment and advanced creator monetisation tools — will have dedicated access tiers. Detailed pricing will be published at launch.'},
+  {cat:'account',q:'How do I create an account?',
+   a:'Click <a href="signup.html">Sign Up</a>, enter your name, country, email, and a secure password (8+ characters). You will also set up 3 account-recovery security questions for your protection. The whole process takes under 60 seconds.'},
+  {cat:'account',q:'I forgot my password — how do I recover my account?',
+   a:'Go to <a href="forgot-password.html">Forgot Password</a>. Enter your registered email, answer your 3 security questions, and we will send a secure reset link to your inbox. If you signed up via Google, Apple, or Microsoft, use the same social login to access your account.'},
+  {cat:'account',q:'Is my data secure?',
+   a:'LUXA uses <strong>Firebase Authentication</strong> — an enterprise-grade identity platform backed by Google — for all account security. Passwords are never stored in plain text. Social sign-ins (Google, Apple, Microsoft) leverage each provider\'s own hardened security infrastructure.'},
+];
+
+const list=document.getElementById('faqList');
+const catBtns=document.querySelectorAll('.cat-btn');
+
+function render(cat){
+  list.innerHTML='';
+  const filtered=cat==='all'?FAQS:FAQS.filter(f=>f.cat===cat);
+  filtered.forEach((faq,i)=>{
+    const item=document.createElement('div');
+    item.className='faq-item'; item.dataset.cat=faq.cat;
+    item.innerHTML=`
+      <div class="faq-q" role="button" tabindex="0" aria-expanded="false">
+        <span class="faq-qtxt">${faq.q}</span>
+        <span class="faq-icon" aria-hidden="true">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </span>
+      </div>
+      <div class="faq-a"><div class="faq-a-inner">${faq.a}</div></div>`;
+    const q=item.querySelector('.faq-q');
+    function toggle(){
+      const open=item.classList.toggle('open');
+      q.setAttribute('aria-expanded',open);
+    }
+    q.addEventListener('click',toggle);
+    q.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle();}});
+    list.appendChild(item);
+  });
+}
+
+catBtns.forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    catBtns.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    render(btn.dataset.cat);
+  });
+});
+
+render('all');
+</script>
+</body>
+</html>
