@@ -6,122 +6,294 @@
   <title>Log In — LUXA</title>
   <meta name="theme-color" content="#05080f" />
   <style>
+    /* ── Reset ── */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html, body {
       min-height: 100%; background: #05080f; color: #F0F4FF;
       font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
       -webkit-font-smoothing: antialiased;
     }
-    .bg {
-      position: fixed; inset: 0; z-index: 0;
-      background:
-        radial-gradient(ellipse 60vw 60vh at 10% 0%,   rgba(0,102,204,.12) 0%, transparent 65%),
-        radial-gradient(ellipse 60vw 60vh at 90% 100%,  rgba(255,107,53,.12) 0%, transparent 65%);
+
+    /* ── Scene / Background ──
+       Admin: set data-scene-bg on <body> to override background theme.
+       Define your theme by overriding --scene-bg CSS variable, e.g.:
+       body[data-scene-bg="dawn"] { --scene-bg: #your-color; }               */
+    .scene {
+      position: fixed; inset: 0; z-index: 0; overflow: hidden;
+      pointer-events: none;
     }
-    .page {
-      position: relative; z-index: 1;
-      min-height: 100svh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 32px 20px;
+    .scene svg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
     }
-    .card {
-      width: 100%; max-width: 420px;
-      background: rgba(8,13,26,.65);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 24px;
-      padding: 40px 36px;
-      box-shadow: 0 24px 80px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08);
-      animation: rise .7s cubic-bezier(.16,1,.3,1) both;
-    }
-    .logo {
-      display: block; text-align: center;
-      font-size: 22px; font-weight: 700; letter-spacing: -.03em;
-      color: #fff; text-decoration: none; margin-bottom: 6px;
-    }
-    .sub { text-align: center; color: rgba(240,244,255,.42); font-size: 13px; margin-bottom: 36px; }
-    h1 { font-size: 24px; font-weight: 700; letter-spacing: -.02em; margin-bottom: 28px; }
-    label { display: block; font-size: 12px; font-weight: 500; color: rgba(240,244,255,.5); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 6px; }
-    .field { margin-bottom: 18px; }
-    input {
-      width: 100%; padding: 13px 16px;
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.1);
-      border-radius: 12px; color: #F0F4FF;
-      font-size: 15px; font-family: inherit;
-      outline: none;
-      transition: border-color .2s, box-shadow .2s;
-    }
-    input:focus {
-      border-color: rgba(0,168,255,.45);
-      box-shadow: 0 0 0 3px rgba(0,168,255,.12);
-    }
-    input::placeholder { color: rgba(240,244,255,.25); }
-    .btn {
-      width: 100%; padding: 14px;
-      background: rgba(0,102,204,.9);
-      color: #fff; font-size: 15px; font-weight: 600;
-      border: 1px solid rgba(0,168,255,.35);
-      border-radius: 14px; cursor: pointer;
-      font-family: inherit; letter-spacing: .01em;
-      box-shadow: 0 4px 24px rgba(0,102,204,.3), inset 0 1px 0 rgba(255,255,255,.15);
-      transition: all .2s cubic-bezier(.16,1,.3,1);
-      margin-top: 8px;
-    }
-    .btn:hover { background: rgba(0,120,235,.95); transform: translateY(-2px); }
-    .btn:active { transform: translateY(0) scale(.98); }
-    .btn:disabled { opacity: .5; cursor: not-allowed; transform: none; }
-    .err {
-      background: rgba(255,80,80,.12); border: 1px solid rgba(255,80,80,.25);
-      border-radius: 10px; padding: 11px 14px;
-      font-size: 13px; color: #ff8080; margin-bottom: 16px; display: none;
-    }
-    .ok {
-      background: rgba(0,200,100,.12); border: 1px solid rgba(0,200,100,.25);
-      border-radius: 10px; padding: 11px 14px;
-      font-size: 13px; color: #4dffaa; margin-bottom: 16px; display: none;
-    }
-    .foot { text-align: center; margin-top: 24px; font-size: 13px; color: rgba(240,244,255,.4); }
-    .foot a { color: rgba(0,168,255,.8); text-decoration: none; }
-    .foot a:hover { color: #00D4FF; }
-    .divider { height: 1px; background: rgba(255,255,255,.07); margin: 24px 0; }
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
+    #stars { position: absolute; inset: 0; }
+
+    /* ── Toast ── */
+    .toasts{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:10px;width:min(340px,calc(100vw - 40px));}
+    .toast{padding:14px 16px;border-radius:14px;font-size:13.5px;font-weight:500;backdrop-filter:blur(20px);display:flex;align-items:center;gap:9px;box-shadow:0 8px 32px rgba(0,0,0,.4);animation:tIn .3s cubic-bezier(.16,1,.3,1) both;}
+    .toast.error{background:rgba(220,50,50,.18);border:1px solid rgba(220,50,50,.3);color:#ff9090;}
+    .toast.success{background:rgba(0,200,100,.13);border:1px solid rgba(0,200,100,.25);color:#5dffb0;}
+    .toast.info{background:rgba(0,120,255,.15);border:1px solid rgba(0,120,255,.25);color:#80c8ff;}
+    .toast-x{margin-left:auto;background:none;border:none;color:inherit;cursor:pointer;opacity:.5;font-size:15px;padding:0 0 0 6px;line-height:1;}
+    .toast-x:hover{opacity:1;}
+    .toast.out{animation:tOut .22s ease-in forwards;}
+    @keyframes tIn{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:translateX(0)}}
+    @keyframes tOut{to{opacity:0;transform:translateX(36px)}}
+
+    /* ── Spinner ── */
+    .spin{width:17px;height:17px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;flex-shrink:0;}
+    @keyframes sp{to{transform:rotate(360deg)}}
+
+    /* ── Nav ── */
+    nav{display:flex;align-items:center;padding:15px 32px;gap:28px;backdrop-filter:blur(12px);background:rgba(5,8,15,.25);border-bottom:1px solid rgba(255,255,255,.06);position:relative;z-index:3;}
+    .nav-logo{font-size:20px;font-weight:700;letter-spacing:-.03em;color:#fff;text-decoration:none;}
+    .nav-links{display:flex;gap:26px;list-style:none;margin:0;}
+    .nav-links a{font-size:13.5px;color:rgba(240,244,255,.5);text-decoration:none;transition:color .2s;}
+    .nav-links a:hover{color:rgba(240,244,255,.9);}
+    .nav-end{margin-left:auto;}
+    .nav-cta{padding:8px 18px;border-radius:20px;background:rgba(0,102,204,.7);border:1px solid rgba(0,168,255,.3);color:#fff;font-size:13px;font-weight:600;text-decoration:none;transition:background .2s;}
+    .nav-cta:hover{background:rgba(0,120,235,.9);}
+    @media(max-width:580px){.nav-links{display:none;}.nav-logo{font-size:18px;}}
+
+    /* ── Page / Card ── */
+    .page{position:relative;z-index:2;min-height:100svh;display:flex;flex-direction:column;}
+    .center{flex:1;display:flex;align-items:center;justify-content:center;padding:28px 16px;}
+    .card{width:100%;max-width:448px;background:rgba(8,13,28,.62);backdrop-filter:blur(28px) saturate(1.2);-webkit-backdrop-filter:blur(28px) saturate(1.2);border:1px solid rgba(255,255,255,.1);border-radius:28px;padding:44px 40px;box-shadow:0 32px 80px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.1);animation:rise .7s cubic-bezier(.16,1,.3,1) both;}
+    @media(max-width:500px){.card{padding:28px 20px;border-radius:22px;}}
+    .card-logo{display:block;text-align:center;font-size:23px;font-weight:700;letter-spacing:-.04em;color:#fff;text-decoration:none;margin-bottom:4px;}
+    .card-sub{text-align:center;font-size:13px;color:rgba(240,244,255,.38);margin-bottom:36px;}
+    h1{font-size:25px;font-weight:700;letter-spacing:-.02em;margin-bottom:26px;}
+    @keyframes rise{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── Fields ── */
+    .field{margin-bottom:18px;}
+    .flabel{display:block;font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(240,244,255,.42);margin-bottom:7px;}
+    .fwrap{position:relative;}
+    .fwrap input{width:100%;padding:13px 16px;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:13px;color:#F0F4FF;font-size:15px;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s,background .2s;-webkit-appearance:none;appearance:none;}
+    .fwrap input:focus{border-color:rgba(0,160,255,.5);box-shadow:0 0 0 3px rgba(0,160,255,.1);background:rgba(255,255,255,.09);}
+    .fwrap input::placeholder{color:rgba(240,244,255,.22);}
+    .fwrap input.pad-r{padding-right:46px;}
+    .eye{position:absolute;right:13px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:rgba(240,244,255,.3);padding:4px;display:flex;transition:color .2s;}
+    .eye:hover{color:rgba(240,244,255,.7);}
+    .eye:focus-visible{outline:2px solid rgba(0,168,255,.7);outline-offset:2px;border-radius:4px;}
+    .fwrap input:focus-visible{outline:none;}
+
+    /* Forgot link */
+    .forgot-row{display:flex;justify-content:flex-end;margin-top:6px;}
+    .forgot-row a{font-size:12px;color:rgba(0,168,255,.65);text-decoration:none;transition:color .2s;}
+    .forgot-row a:hover{color:#00D4FF;}
+    .forgot-row a:focus-visible{outline:2px solid rgba(0,168,255,.7);outline-offset:2px;border-radius:3px;}
+
+    /* ── Button ── */
+    .btn{width:100%;padding:14px;background:rgba(0,102,204,.9);color:#fff;font-size:15px;font-weight:600;border:1px solid rgba(0,168,255,.35);border-radius:15px;cursor:pointer;font-family:inherit;letter-spacing:.01em;box-shadow:0 4px 24px rgba(0,102,204,.3),inset 0 1px 0 rgba(255,255,255,.15);transition:all .2s cubic-bezier(.16,1,.3,1);display:flex;align-items:center;justify-content:center;gap:9px;margin-top:4px;}
+    .btn:hover:not(:disabled){background:rgba(0,120,235,.95);transform:translateY(-2px);box-shadow:0 10px 36px rgba(0,102,204,.45);}
+    .btn:active:not(:disabled){transform:translateY(0) scale(.98);}
+    .btn:disabled{opacity:.38;cursor:not-allowed;background:rgba(50,55,80,.7);border-color:rgba(255,255,255,.07);box-shadow:none;transform:none;}
+    .btn:focus-visible{outline:2px solid rgba(0,168,255,.8);outline-offset:2px;}
+
+    /* ── Divider ── */
+    .div{display:flex;align-items:center;gap:11px;margin:22px 0;color:rgba(240,244,255,.22);font-size:12px;}
+    .div::before,.div::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.08);}
+
+    /* ── Social buttons ── */
+    .socials{display:flex;gap:8px;}
+    .sbtn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:11px 10px;border-radius:12px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(240,244,255,.72);font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .2s,transform .2s;white-space:nowrap;}
+    .sbtn:hover{background:rgba(255,255,255,.12);transform:translateY(-2px);}
+    .sbtn:active{transform:scale(.97);}
+    .sbtn:focus-visible{outline:2px solid rgba(0,168,255,.7);outline-offset:2px;}
+    .si{width:17px;height:17px;flex-shrink:0;}
+
+    /* ── Footer ── */
+    .cfoot{text-align:center;margin-top:26px;font-size:13px;color:rgba(240,244,255,.36);}
+    .cfoot a{color:rgba(0,168,255,.75);text-decoration:none;}
+    .cfoot a:hover{color:#00D4FF;}
+
+    /* ── Reduced motion ── */
+    @media(prefers-reduced-motion:reduce){
+      .card,.toast{animation:none;}
+      .spin{animation:none;border-top-color:#fff;}
     }
   </style>
 </head>
 <body>
-<div class="bg"></div>
+
+<!-- ── Background Scene ── -->
+<div class="scene">
+  <canvas id="stars"></canvas>
+  <svg viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#04080f"/>
+        <stop offset="28%"  stop-color="#0b1028"/>
+        <stop offset="52%"  stop-color="#1e0b35"/>
+        <stop offset="68%"  stop-color="#3a1030"/>
+        <stop offset="80%"  stop-color="#7a2525"/>
+        <stop offset="91%"  stop-color="#c44820"/>
+        <stop offset="100%" stop-color="#e8722a"/>
+      </linearGradient>
+      <linearGradient id="wref" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%"   stop-color="#c44820" stop-opacity=".22"/>
+        <stop offset="50%"  stop-color="#1e0b35" stop-opacity=".18"/>
+        <stop offset="100%" stop-color="#04080f"/>
+      </linearGradient>
+    </defs>
+    <rect width="1440" height="900" fill="url(#sky)"/>
+    <path d="M0 520 L120 380 L240 430 L380 300 L480 360 L580 280 L680 340 L780 260 L870 320 L960 240 L1060 300 L1160 220 L1260 290 L1360 240 L1440 280 L1440 900 L0 900Z" fill="#1a1040" opacity=".85"/>
+    <path d="M0 600 L80 480 L180 530 L280 450 L380 510 L480 430 L560 490 L660 410 L760 470 L860 390 L960 450 L1060 380 L1160 440 L1260 370 L1360 430 L1440 400 L1440 900 L0 900Z" fill="#130c30" opacity=".9"/>
+    <path d="M0 700 L200 600 L400 650 L600 580 L800 640 L1000 570 L1200 620 L1440 590 L1440 900 L0 900Z" fill="#0a0820"/>
+    <g fill="#c47020" opacity=".9">
+      <polygon points="10,700 48,555 86,700"/>
+      <polygon points="55,700 98,535 141,700"/>
+      <polygon points="100,700 145,545 190,700"/>
+      <polygon points="145,700 195,520 245,700"/>
+      <polygon points="190,700 245,540 300,700"/>
+      <polygon points="235,700 292,555 349,700"/>
+    </g>
+    <g fill="#e08c28" opacity=".65">
+      <polygon points="30,700 58,575 86,700"/>
+      <polygon points="115,700 148,558 181,700"/>
+      <polygon points="205,700 245,548 285,700"/>
+    </g>
+    <g fill="#1a1845" opacity=".9">
+      <polygon points="1160,700 1205,555 1250,700"/>
+      <polygon points="1200,700 1250,530 1300,700"/>
+      <polygon points="1245,700 1295,548 1345,700"/>
+      <polygon points="1295,700 1345,528 1395,700"/>
+      <polygon points="1340,700 1390,545 1440,700"/>
+      <polygon points="1110,700 1158,570 1206,700"/>
+    </g>
+    <g fill="#0d103a" opacity=".7">
+      <polygon points="1175,700 1212,562 1249,700"/>
+      <polygon points="1310,700 1352,540 1394,700"/>
+    </g>
+    <rect x="0" y="700" width="1440" height="200" fill="#03050c"/>
+    <rect x="280" y="715" width="880" height="110" fill="url(#wref)" rx="2"/>
+  </svg>
+</div>
+
+<!-- ── Toast container ── -->
+<div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+<!-- ── Page ── -->
 <div class="page">
-  <div class="card">
-    <a href="index.html" class="logo">LUXA</a>
-    <p class="sub">Welcome back</p>
+  <nav>
+    <a href="index.html" class="nav-logo">LUXA</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="#">Features</a></li>
+      <li><a href="#">About</a></li>
+    </ul>
+    <div class="nav-end"><a href="signup.html" class="nav-cta">Sign Up</a></div>
+  </nav>
 
-    <div class="err" id="err"></div>
-    <div class="ok"  id="ok"></div>
-
-    <form id="form">
+  <div class="center">
+    <div class="card">
+      <a href="index.html" class="card-logo">LUXA</a>
+      <p class="card-sub">Welcome back</p>
       <h1>Log In</h1>
-      <div class="field">
-        <label for="email">Email</label>
-        <input type="email" id="email" placeholder="you@example.com" autocomplete="email" required />
-      </div>
-      <div class="field">
-        <label for="pw">Password</label>
-        <input type="password" id="pw" placeholder="Your password" autocomplete="current-password" required />
-      </div>
-      <button class="btn" id="btn" type="submit">Log In</button>
-    </form>
 
-    <div class="divider"></div>
-    <p class="foot">No account? <a href="signup.html">Sign up</a></p>
+      <form id="form" novalidate>
+        <!-- Honeypot -->
+        <input name="website" tabindex="-1" style="opacity:0;position:absolute;height:0;width:0;pointer-events:none" aria-hidden="true" autocomplete="off">
+
+        <!-- Email -->
+        <div class="field">
+          <label class="flabel" for="email">Email</label>
+          <div class="fwrap">
+            <input type="email" id="email" name="email" inputmode="email"
+                   autocomplete="email" placeholder="you@example.com" required />
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="field">
+          <label class="flabel" for="pw">Password</label>
+          <div class="fwrap">
+            <input type="password" id="pw" name="pw" class="pad-r"
+                   autocomplete="current-password" placeholder="Your password" required />
+            <button type="button" class="eye" id="eye-pw" aria-label="Show password">
+              <!-- open eye (shown by default — password is hidden) -->
+              <svg class="si eye-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+              <!-- closed eye (shown when password is visible) -->
+              <svg class="si eye-closed" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none">
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+          <div class="forgot-row"><a href="forgot-password.html">Forgot password?</a></div>
+        </div>
+
+        <button type="submit" class="btn" id="btn" disabled>Log In</button>
+      </form>
+
+      <div class="div">or continue with</div>
+
+      <div class="socials">
+        <!-- Google -->
+        <button type="button" class="sbtn" id="btn-google" aria-label="Sign in with Google">
+          <svg class="si" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+          </svg>
+          Google
+        </button>
+        <!-- Apple -->
+        <button type="button" class="sbtn" id="btn-apple" aria-label="Sign in with Apple">
+          <svg class="si" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+          </svg>
+          Apple
+        </button>
+        <!-- Microsoft -->
+        <button type="button" class="sbtn" id="btn-ms" aria-label="Sign in with Microsoft">
+          <svg class="si" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="10" height="10" fill="#F25022"/>
+            <rect x="13" y="1" width="10" height="10" fill="#7FBA00"/>
+            <rect x="1" y="13" width="10" height="10" fill="#00A4EF"/>
+            <rect x="13" y="13" width="10" height="10" fill="#FFB900"/>
+          </svg>
+          Microsoft
+        </button>
+      </div>
+
+      <div class="cfoot">No account? <a href="signup.html">Sign up free</a></div>
+    </div>
   </div>
 </div>
 
 <script type="module">
+  /* ── Stars canvas ── */
+  (function(){
+    const c=document.getElementById('stars'),cx=c.getContext('2d');
+    function draw(){
+      c.width=innerWidth; c.height=innerHeight*.65;
+      cx.clearRect(0,0,c.width,c.height);
+      for(let i=0;i<170;i++){
+        cx.beginPath();
+        cx.arc(Math.random()*c.width,Math.random()*c.height,Math.random()*1.1,.0,Math.PI*2);
+        cx.fillStyle=`rgba(255,255,255,${(.2+Math.random()*.65).toFixed(2)})`;
+        cx.fill();
+      }
+    }
+    draw(); addEventListener('resize',draw);
+  })();
+
+  /* ── Toast system ── */
+  function toast(msg,type='error',ms=5000){
+    const c=document.getElementById('toasts'),el=document.createElement('div');
+    el.className=`toast ${type}`;
+    el.innerHTML=`<span>${{error:'✕',success:'✓',info:'ℹ'}[type]||'ℹ'}</span><span>${msg}</span><button class="toast-x" aria-label="close">✕</button>`;
+    el.querySelector('.toast-x').onclick=()=>bye(el);
+    c.appendChild(el);
+    if(ms>0)setTimeout(()=>bye(el),ms);
+  }
+  function bye(el){el.classList.add('out');setTimeout(()=>el.remove(),230);}
+
+  /* ── Firebase config ── */
   const FB_CONFIG = {
     apiKey:            window.LUXA_FB_API_KEY            || '',
     authDomain:        window.LUXA_FB_AUTH_DOMAIN        || '',
@@ -131,50 +303,131 @@
     appId:             window.LUXA_FB_APP_ID             || '',
   };
 
-  const err = document.getElementById('err');
-  const ok  = document.getElementById('ok');
-  const btn = document.getElementById('btn');
+  /* ── Firebase error map ── */
+  const FERR={
+    'auth/user-not-found':'No account found with this email.',
+    'auth/wrong-password':'Incorrect password.',
+    'auth/invalid-email':'Please enter a valid email.',
+    'auth/email-already-in-use':'An account with this email already exists.',
+    'auth/weak-password':'Password must be at least 8 characters.',
+    'auth/too-many-requests':'Too many attempts. Please wait.',
+    'auth/invalid-credential':'Incorrect email or password.',
+    'auth/network-request-failed':'Network error. Check your connection.',
+    'auth/user-disabled':'This account has been disabled.',
+    'auth/popup-closed-by-user':'Sign-in window was closed.',
+    'auth/popup-blocked':'Pop-up blocked. Please allow pop-ups.',
+  };
 
-  function showErr(msg) { err.textContent = msg; err.style.display = 'block'; ok.style.display = 'none'; }
-  function showOk(msg)  { ok.textContent  = msg; ok.style.display  = 'block'; err.style.display = 'none'; }
+  /* ── Firebase lazy loader ── */
+  let _app, _auth;
+  async function getFirebase() {
+    if (_auth) return { auth: _auth };
+    const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+    const { getAuth } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+    _app  = getApps().length ? getApps()[0] : initializeApp(FB_CONFIG);
+    _auth = getAuth(_app);
+    return { auth: _auth };
+  }
 
-  document.getElementById('form').addEventListener('submit', async (e) => {
+  /* ── DOM refs ── */
+  const emailEl = document.getElementById('email');
+  const pwEl    = document.getElementById('pw');
+  const btn     = document.getElementById('btn');
+  const eyeBtn  = document.getElementById('eye-pw');
+  const form    = document.getElementById('form');
+  const hp      = form.querySelector('[name="website"]');
+
+  /* ── Eye toggle ── */
+  eyeBtn.addEventListener('click', () => {
+    const show = pwEl.type === 'password';
+    pwEl.type = show ? 'text' : 'password';
+    eyeBtn.querySelector('.eye-open').style.display  = show ? 'none' : '';
+    eyeBtn.querySelector('.eye-closed').style.display = show ? ''    : 'none';
+    eyeBtn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+  });
+
+  /* ── Validation ── */
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  function validate() {
+    const ok = emailRe.test(emailEl.value.trim())
+            && pwEl.value.length > 0
+            && hp.value === '';
+    btn.disabled = !ok;
+  }
+  emailEl.addEventListener('input', validate);
+  pwEl.addEventListener('input', validate);
+
+  /* ── Email/password submit ── */
+  form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    err.style.display = 'none';
+    if (hp.value !== '') return; // honeypot triggered
+    if (!FB_CONFIG.apiKey) { toast('Firebase not configured yet.', 'error'); return; }
+
+    const email = emailEl.value.trim();
+    const pw    = pwEl.value;
+
     btn.disabled = true;
-    btn.textContent = 'Logging in…';
-
-    const email = document.getElementById('email').value.trim();
-    const pw    = document.getElementById('pw').value;
-
-    if (!FB_CONFIG.apiKey) {
-      showErr('Firebase not configured yet. Coming soon.');
-      btn.disabled = false; btn.textContent = 'Log In';
-      return;
-    }
+    btn.innerHTML = '<span class="spin"></span>Logging in…';
 
     try {
-      const { initializeApp, getApps } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
-      const { getAuth, signInWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
-
-      const app  = getApps().length ? getApps()[0] : initializeApp(FB_CONFIG);
-      const auth = getAuth(app);
-
+      const { auth } = await getFirebase();
+      const { signInWithEmailAndPassword } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
       await signInWithEmailAndPassword(auth, email, pw);
-      showOk('Welcome back! Redirecting…');
+      toast('Welcome back! Redirecting…', 'success');
       setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
-    } catch (e) {
-      const msgs = {
-        'auth/user-not-found':   'No account found with this email.',
-        'auth/wrong-password':   'Incorrect password.',
-        'auth/invalid-email':    'Invalid email address.',
-        'auth/too-many-requests':'Too many attempts. Try again later.',
-        'auth/invalid-credential': 'Incorrect email or password.',
-      };
-      showErr(msgs[e.code] || e.message || 'Login failed. Try again.');
-      btn.disabled = false; btn.textContent = 'Log In';
+    } catch (err) {
+      toast(FERR[err.code] || err.message || 'Login failed. Try again.', 'error');
+      btn.disabled = false;
+      btn.textContent = 'Log In';
+      validate();
     }
   });
+
+  /* ── Social sign-in helper ── */
+  async function socialSignIn(providerId) {
+    if (!FB_CONFIG.apiKey) { toast('Firebase not configured yet.', 'error'); return; }
+    try {
+      const { auth } = await getFirebase();
+      const { signInWithPopup, GoogleAuthProvider, OAuthProvider } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+      const { getFirestore, doc, getDoc, setDoc, serverTimestamp } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+
+      let provider;
+      if (providerId === 'google')      provider = new GoogleAuthProvider();
+      else if (providerId === 'apple')  provider = new OAuthProvider('apple.com');
+      else                              provider = new OAuthProvider('microsoft.com');
+
+      const result = await signInWithPopup(auth, provider);
+      const user   = result.user;
+
+      // Create Firestore doc if doesn't exist
+      const db  = getFirestore(_app);
+      const ref = doc(db, 'users', user.uid);
+      const snap = await getDoc(ref);
+      if (!snap.exists()) {
+        await setDoc(ref, {
+          uid:               user.uid,
+          email:             user.email,
+          displayName:       user.displayName || '',
+          country:           '',
+          luzaId:            `luxa_${(user.displayName||'user').toLowerCase().replace(/[^a-z0-9]/g,'_').slice(0,20)}_${user.uid.slice(-6)}`,
+          role:              'member',
+          isActive:          true,
+          recoveryQuestions: [],
+          createdAt:         serverTimestamp(),
+          updatedAt:         serverTimestamp(),
+        });
+      }
+
+      toast('Welcome back! Redirecting…', 'success');
+      setTimeout(() => { window.location.href = 'dashboard.html'; }, 1200);
+    } catch (err) {
+      toast(FERR[err.code] || err.message || 'Sign-in failed.', 'error');
+    }
+  }
+
+  document.getElementById('btn-google').addEventListener('click', () => socialSignIn('google'));
+  document.getElementById('btn-apple').addEventListener('click',  () => socialSignIn('apple'));
+  document.getElementById('btn-ms').addEventListener('click',     () => socialSignIn('microsoft'));
 </script>
 </body>
 </html>
