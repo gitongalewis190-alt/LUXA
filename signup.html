@@ -55,6 +55,14 @@
     .nav-cta:hover{background:rgba(0,120,235,.9);}
     @media(max-width:580px){.nav-links{display:none;}.nav-logo{font-size:18px;}}
 
+    /* ── Back button ── */
+    .back-btn{position:fixed;top:78px;left:22px;z-index:5;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.07);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.12);color:rgba(240,244,255,.75);cursor:pointer;transition:background .2s,transform .2s,color .2s;}
+    .back-btn:hover{background:rgba(255,255,255,.16);transform:translateX(-2px);color:#fff;}
+    .back-btn:active{transform:translateX(-2px) scale(.95);}
+    .back-btn:focus-visible{outline:2px solid rgba(0,168,255,.7);outline-offset:2px;}
+    .back-btn svg{width:18px;height:18px;flex-shrink:0;}
+    @media(max-width:580px){.back-btn{position:static;flex-shrink:0;margin-right:-14px;}}
+
     /* ── Page / Card ── */
     .page{position:relative;z-index:2;min-height:100svh;display:flex;flex-direction:column;}
     .center{flex:1;display:flex;align-items:center;justify-content:center;padding:28px 16px;}
@@ -183,6 +191,9 @@
 <!-- ── Page ── -->
 <div class="page">
   <nav>
+    <button type="button" class="back-btn" id="back-btn" aria-label="Go back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
     <a href="index.html" class="nav-logo">LUXA</a>
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
@@ -449,6 +460,41 @@
       }
     }
     draw(); addEventListener('resize',draw);
+  })();
+
+  /* ── Back button ── */
+  document.getElementById('back-btn').addEventListener('click', () => {
+    if (history.length > 1) history.back(); else location.href = 'index.html';
+  });
+
+  /* ── Scene parallax (spatial) ── */
+  (function(){
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const sceneSvg = document.querySelector('.scene svg');
+    if (!sceneSvg) return;
+    sceneSvg.style.transition = 'transform .6s ease-out';
+    sceneSvg.style.willChange = 'transform';
+    const MAX = 8;
+    let raf = null, nx = 0, ny = 0;
+    function schedule(x, y){            // x, y normalized to [-1, 1]
+      nx = Math.max(-1, Math.min(1, x));
+      ny = Math.max(-1, Math.min(1, y));
+      if (raf) return;
+      raf = requestAnimationFrame(() => {
+        raf = null;
+        sceneSvg.style.transform = `translate(${(-nx*MAX).toFixed(2)}px, ${(-ny*MAX).toFixed(2)}px)`;
+      });
+    }
+    if (matchMedia('(pointer: fine)').matches) {
+      addEventListener('mousemove', e => {
+        schedule((e.clientX / innerWidth) * 2 - 1, (e.clientY / innerHeight) * 2 - 1);
+      }, { passive: true });
+    } else if ('DeviceOrientationEvent' in window) {
+      addEventListener('deviceorientation', e => {
+        if (e.gamma == null || e.beta == null) return;
+        schedule(e.gamma / 30, (e.beta - 45) / 30);
+      });
+    }
   })();
 
   /* ── Toast system ── */
