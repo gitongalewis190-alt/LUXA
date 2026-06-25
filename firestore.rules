@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // /users/{uid} — profile, membership, recovery data. Owner only.
+    match /users/{uid} {
+      allow read, write: if isOwner(uid);
+
+      match /garage/{docId} {
+        allow read, write: if isOwner(uid);
+      }
+      match /services/{docId} {
+        allow read, write: if isOwner(uid);
+      }
+      match /bookings/{docId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    // /support_tickets/{id} — each doc carries the owner's uid as a field
+    // (it's a top-level collection, not a /users/{uid} subcollection).
+    match /support_tickets/{ticketId} {
+      allow read: if request.auth != null && resource.data.uid == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // /community_posts/{id} — public feed. Anyone can read; signed-in users
+    // can post, and can only ever touch the like/comment fields on posts
+    // they don't own (no edits to someone else's text/author).
+    match /community_posts/{postId} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.resource.data.keys().hasOnly(['author','initials','text','likes','likedBy','comments','createdAt'])
+                    && request.resource.data.likes == 0
+                    && request.resource.data.likedBy == []
+                    && request.resource.data.comments == [];
+      allow update: if request.auth != null
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes','likedBy','comments']);
+      allow delete: if false;
+    }
+
+    // Everything else: deny by default.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
