@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>LUXA Club — Membership Benefits</title>
+<meta name="description" content="Your LUXA Club membership — points, tier, exclusive offers, and VIP events."/>
+<meta name="theme-color" content="#F4F6F9"/>
+<meta name="robots" content="noindex"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#F4F6F9; --card:#FFFFFF; --border:#E7EAEF; --ink:#12141C; --ink-60:#5B616E; --ink-40:#8B919E;
+  --blue:#2563EB; --blue-deep:#1D4ED8; --blue-soft:#EAF1FF;
+  --radius:16px; --shadow:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.06);
+  --shadow-lg:0 12px 32px rgba(16,24,40,.12);
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter','Helvetica Neue',sans-serif;-webkit-font-smoothing:antialiased;}
+a{color:inherit;}
+button{font-family:inherit;}
+
+/* ── App shell ── */
+.app{display:flex;min-height:100vh;}
+
+/* ── Sidebar ── */
+.sidebar{width:248px;background:#fff;border-right:1px solid var(--border);position:fixed;top:0;left:0;height:100vh;
+  display:flex;flex-direction:column;padding:22px 16px;z-index:40;transition:transform .25s;}
+.sb-logo{font-size:21px;font-weight:800;letter-spacing:-.03em;padding:4px 12px 26px;text-decoration:none;color:var(--ink);}
+.sb-nav{display:flex;flex-direction:column;gap:3px;flex:1;}
+.sb-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;color:var(--ink-60);
+  font-size:14.5px;font-weight:600;text-decoration:none;transition:background .16s,color .16s;}
+.sb-item svg{flex-shrink:0;opacity:.85;}
+.sb-item:hover{background:#F2F4F8;color:var(--ink);}
+.sb-item.active{background:var(--blue-soft);color:var(--blue-deep);}
+.sb-item.active svg{opacity:1;}
+.sb-foot{border-top:1px solid var(--border);padding-top:14px;margin-top:8px;}
+.sb-logout{background:none;border:none;width:100%;cursor:pointer;}
+
+/* ── Mobile sidebar toggle ── */
+.sb-toggle{display:none;width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:#fff;
+  align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(10,12,18,.4);z-index:39;}
+@media(max-width:920px){
+  .sidebar{transform:translateX(-100%);box-shadow:var(--shadow-lg);}
+  .sidebar.open{transform:translateX(0);}
+  .sb-overlay.show{display:block;}
+  .sb-toggle{display:flex;}
+  .main-wrap{margin-left:0 !important;}
+}
+
+/* ── Main ── */
+.main-wrap{margin-left:248px;flex:1;display:flex;flex-direction:column;min-width:0;}
+.topbar{display:flex;align-items:center;gap:16px;padding:16px 32px;border-bottom:1px solid var(--border);
+  background:#fff;position:sticky;top:0;z-index:30;}
+.welcome{font-size:15px;font-weight:700;white-space:nowrap;}
+.welcome span{opacity:.55;font-weight:600;}
+.search-wrap{flex:1;max-width:420px;position:relative;}
+.search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.4;pointer-events:none;}
+.search-input{width:100%;padding:10px 14px 10px 38px;border-radius:10px;border:1px solid var(--border);
+  background:#F7F8FA;font-size:13.5px;color:var(--ink);outline:none;transition:border-color .15s,background .15s;}
+.search-input:focus{border-color:var(--blue);background:#fff;}
+.search-results{position:absolute;top:calc(100% + 8px);left:0;right:0;background:#fff;border:1px solid var(--border);
+  border-radius:14px;box-shadow:var(--shadow-lg);max-height:360px;overflow-y:auto;opacity:0;visibility:hidden;
+  transform:translateY(-6px);transition:opacity .16s,transform .16s,visibility .16s;z-index:35;}
+.search-results.open{opacity:1;visibility:visible;transform:translateY(0);}
+.sr-group{padding:10px 14px 4px;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-40);}
+.sr-item{display:flex;align-items:center;gap:10px;padding:9px 14px;font-size:13.5px;font-weight:600;text-decoration:none;
+  color:var(--ink);transition:background .12s;}
+.sr-item:hover{background:#F7F8FA;}
+.sr-item svg{opacity:.4;flex-shrink:0;}
+.sr-empty{padding:24px 14px;text-align:center;font-size:13px;color:var(--ink-40);}
+.top-end{margin-left:auto;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.icon-btn{width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:#fff;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;flex-shrink:0;}
+.icon-btn:hover{background:#F7F8FA;}
+.bell-badge{position:absolute;top:-4px;right:-4px;background:#EF4444;color:#fff;font-size:10px;font-weight:700;
+  min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;}
+.profile-btn{display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:24px;border:1px solid var(--border);
+  background:#fff;cursor:pointer;flex-shrink:0;}
+.profile-btn:hover{background:#F7F8FA;}
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#2563EB,#7C3AED);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;flex-shrink:0;}
+.profile-name{font-size:13.5px;font-weight:700;}
+.profile-btn svg{opacity:.4;}
+
+/* ── Dropdown panels ── */
+.panel-wrap{position:relative;}
+.panel{position:absolute;top:50px;right:0;width:340px;background:#fff;border:1px solid var(--border);border-radius:14px;
+  box-shadow:var(--shadow-lg);opacity:0;visibility:hidden;transform:translateY(-6px);
+  transition:opacity .18s,transform .18s,visibility .18s;z-index:50;overflow:hidden;}
+.panel.open{opacity:1;visibility:visible;transform:translateY(0);}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);}
+.panel-head h4{font-size:14px;font-weight:700;}
+.panel-head button{background:none;border:none;font-size:12px;font-weight:600;color:var(--blue);cursor:pointer;}
+.panel-body{max-height:360px;overflow-y:auto;}
+.notif{display:flex;gap:12px;padding:13px 16px;border-bottom:1px solid #F2F4F8;cursor:pointer;transition:background .14s;}
+.notif:hover{background:#F9FAFB;}
+.notif:last-child{border-bottom:none;}
+.notif.unread{background:#F5F9FF;}
+.notif-ic{width:34px;height:34px;border-radius:10px;background:var(--blue-soft);color:var(--blue-deep);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.notif-txt p{font-size:13px;font-weight:600;line-height:1.4;margin-bottom:2px;}
+.notif-txt span{font-size:11.5px;color:var(--ink-40);}
+.notif-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);margin-left:auto;margin-top:5px;flex-shrink:0;}
+.panel-empty{padding:32px 16px;text-align:center;font-size:13px;color:var(--ink-40);}
+.menu-item{display:flex;align-items:center;gap:11px;padding:11px 16px;font-size:13.5px;font-weight:600;text-decoration:none;
+  color:var(--ink);transition:background .12s;border:none;background:none;width:100%;text-align:left;cursor:pointer;}
+.menu-item svg{opacity:.45;flex-shrink:0;}
+.menu-item:hover{background:#F7F8FA;}
+.menu-sep{border-top:1px solid var(--border);margin:4px 0;}
+.menu-item.danger{color:#DC2626;}
+.menu-item.danger svg{opacity:.7;}
+
+/* ── Content layout (single column — full width) ── */
+.content{padding:28px 32px 60px;}
+.page-head{margin-bottom:24px;}
+.page-head h1{font-size:24px;font-weight:800;letter-spacing:-.01em;margin-bottom:6px;}
+.page-head p{font-size:13.5px;color:var(--ink-60);}
+.section{margin-bottom:32px;}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.section-head h2{font-size:17px;font-weight:800;letter-spacing:-.01em;}
+.section-head p{font-size:12.5px;color:var(--ink-60);margin-top:2px;}
+
+/* ── Club status hero ── */
+.club-hero{border-radius:22px;padding:32px 36px;color:#fff;background:linear-gradient(135deg,#0B0E16,#1B2333 60%,#222A3D);
+  position:relative;overflow:hidden;display:flex;flex-wrap:wrap;gap:28px;align-items:center;justify-content:space-between;}
+.club-hero::after{content:'';position:absolute;inset:0;background:
+  radial-gradient(ellipse 60% 80% at 85% 20%, rgba(37,99,235,.35), transparent 60%),
+  radial-gradient(ellipse 50% 70% at 100% 100%, rgba(255,193,7,.16), transparent 60%);}
+.club-hero-in{position:relative;z-index:1;}
+.club-hero-eyebrow{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#FFC107;margin-bottom:10px;}
+.club-hero h1{font-size:26px;font-weight:800;letter-spacing:-.02em;margin-bottom:8px;}
+.club-hero p{font-size:13.5px;color:rgba(255,255,255,.65);max-width:380px;line-height:1.55;}
+.club-points-card{position:relative;z-index:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+  border-radius:16px;padding:20px 26px;min-width:240px;}
+.club-points-card .pts{font-size:30px;font-weight:800;}
+.club-points-card .pts-sub{font-size:11.5px;color:rgba(255,255,255,.55);margin-bottom:14px;}
+.club-progress-track{height:8px;border-radius:5px;background:rgba(255,255,255,.14);overflow:hidden;margin-bottom:8px;}
+.club-progress-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#2563EB,#FFC107);}
+.club-progress-label{font-size:11px;color:rgba(255,255,255,.55);}
+.club-tier-badge{display:inline-block;margin-bottom:10px;background:rgba(255,193,7,.18);color:#FFC107;font-size:10.5px;
+  font-weight:700;padding:5px 11px;border-radius:8px;letter-spacing:.04em;}
+
+/* ── Tier ladder ── */
+.tier-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+@media(max-width:900px){.tier-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:520px){.tier-grid{grid-template-columns:1fr;}}
+.tier-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;position:relative;}
+.tier-card.current{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue-soft);}
+.tier-current-tag{position:absolute;top:-10px;right:14px;background:var(--blue);color:#fff;font-size:10px;font-weight:700;
+  padding:3px 9px;border-radius:7px;letter-spacing:.03em;}
+.tier-ic{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:18px;}
+.tier-bronze .tier-ic{background:#F3E5DC;}
+.tier-silver .tier-ic{background:#EAEDF2;}
+.tier-gold .tier-ic{background:#FCF1D6;}
+.tier-platinum .tier-ic{background:#E9EAFB;}
+.tier-card h4{font-size:14.5px;font-weight:800;margin-bottom:3px;}
+.tier-card .tier-range{font-size:11.5px;color:var(--ink-40);margin-bottom:10px;}
+.tier-perks{font-size:12px;color:var(--ink-60);line-height:1.6;padding-left:0;list-style:none;}
+.tier-perks li{padding-left:14px;position:relative;margin-bottom:3px;}
+.tier-perks li::before{content:'✓';position:absolute;left:0;color:var(--blue);font-weight:700;}
+
+/* ── Offers grid ── */
+.offer-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+@media(max-width:900px){.offer-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.offer-grid{grid-template-columns:1fr;}}
+.offer-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;}
+.offer-ic{width:38px;height:38px;border-radius:10px;background:var(--blue-soft);color:var(--blue-deep);display:flex;
+  align-items:center;justify-content:center;margin-bottom:12px;}
+.offer-card h4{font-size:14px;font-weight:800;margin-bottom:5px;}
+.offer-card p{font-size:12.5px;color:var(--ink-60);line-height:1.5;margin-bottom:8px;flex:1;}
+.offer-expiry{font-size:11px;color:var(--ink-40);margin-bottom:12px;}
+.offer-redeem{width:100%;padding:10px;border-radius:10px;background:var(--blue);color:#fff;border:none;font-size:12.5px;
+  font-weight:700;cursor:pointer;transition:background .15s;}
+.offer-redeem:hover{background:var(--blue-deep);}
+.offer-redeem.redeemed{background:#EAF1FF;color:var(--blue-deep);}
+.offer-redeem.redeemed:hover{background:#DCE9FF;}
+
+/* ── VIP Events (reused pattern) ── */
+.event-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+@media(max-width:760px){.event-grid{grid-template-columns:1fr;}}
+.event-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;}
+.event-date{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--blue-deep);
+  background:var(--blue-soft);padding:4px 10px;border-radius:7px;margin-bottom:10px;}
+.event-card h4{font-size:15px;font-weight:800;margin-bottom:6px;}
+.event-loc{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--ink-60);margin-bottom:14px;}
+.event-loc svg{opacity:.5;flex-shrink:0;}
+.event-join{width:100%;padding:10px;border-radius:10px;background:var(--blue);color:#fff;border:none;font-size:13px;
+  font-weight:700;cursor:pointer;transition:background .15s;}
+.event-join:hover{background:var(--blue-deep);}
+.event-join.joined{background:#EAF1FF;color:var(--blue-deep);}
+.event-join.joined:hover{background:#DCE9FF;}
+
+/* ── Benefits grid ── */
+.benefit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+@media(max-width:900px){.benefit-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.benefit-grid{grid-template-columns:1fr;}}
+.benefit-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;}
+.benefit-ic{width:38px;height:38px;border-radius:10px;background:var(--blue-soft);color:var(--blue-deep);display:flex;
+  align-items:center;justify-content:center;margin-bottom:12px;}
+.benefit-card h4{font-size:13.5px;font-weight:800;margin-bottom:5px;}
+.benefit-card p{font-size:12px;color:var(--ink-60);line-height:1.5;}
+
+/* ── Earn points note ── */
+.earn-note{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px 22px;display:flex;
+  gap:24px;flex-wrap:wrap;}
+.earn-item{flex:1;min-width:160px;}
+.earn-item b{display:block;font-size:14px;font-weight:800;margin-bottom:3px;color:var(--blue-deep);}
+.earn-item span{font-size:12px;color:var(--ink-60);}
+
+/* ── Modal (kept for shell parity, unused on this page) ── */
+.modal-ov{position:fixed;inset:0;background:rgba(10,12,18,.5);z-index:100;display:flex;align-items:center;justify-content:center;
+  padding:20px;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s;}
+.modal-ov.open{opacity:1;visibility:visible;}
+.modal{background:#fff;border-radius:20px;max-width:440px;width:100%;max-height:88vh;overflow-y:auto;
+  transform:translateY(14px);transition:transform .2s;box-shadow:0 24px 60px rgba(0,0,0,.25);}
+.modal-ov.open .modal{transform:translateY(0);}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-bottom:1px solid var(--border);}
+.modal-head h3{font-size:16px;font-weight:800;}
+.modal-x{width:32px;height:32px;border-radius:9px;border:none;background:#F4F6F9;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;color:var(--ink-60);flex-shrink:0;}
+.modal-body{padding:22px;}
+
+/* ── Toasts ── */
+.toasts{position:fixed;top:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:10px;}
+.toast{display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:12px;background:#fff;
+  box-shadow:var(--shadow-lg);font-size:13px;font-weight:600;min-width:260px;border-left:4px solid var(--blue);
+  animation:slideIn .25s ease;}
+.toast.out{animation:slideOut .2s ease forwards;}
+.toast.success{border-left-color:#16A34A;}
+.toast.error{border-left-color:#DC2626;}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
+@keyframes slideOut{to{opacity:0;transform:translateX(20px);}}
+
+/* ── Footer ── */
+.app-footer{border-top:1px solid var(--border);padding:24px 32px;display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:14px;color:var(--ink-40);font-size:12.5px;}
+.app-footer .f-links{display:flex;gap:18px;flex-wrap:wrap;}
+.app-footer a{text-decoration:none;color:var(--ink-60);}
+.app-footer a:hover{color:var(--blue);}
+.f-social{display:flex;gap:10px;}
+.f-social a{width:30px;height:30px;border-radius:9px;background:#F4F6F9;display:flex;align-items:center;justify-content:center;}
+
+@media(max-width:600px){.content{padding:20px 16px 50px;}.topbar{padding:14px 16px;}.welcome{display:none;}
+  .club-hero{padding:26px 22px;}}
+</style>
+</head>
+<body>
+
+<div class="toasts" id="toasts"></div>
+
+<div class="app">
+  <div class="sb-overlay" id="sbOverlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <a href="dashboard.html" class="sb-logo">LUXA</a>
+    <nav class="sb-nav">
+      <a href="dashboard.html" class="sb-item">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </a>
+      <a href="cars.html" class="sb-item">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 13l1.5-5A2 2 0 0 1 6.4 6.5h11.2a2 2 0 0 1 1.9 1.5L21 13"/><rect x="2" y="13" width="20" height="6" rx="2"/><circle cx="7" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg>
+        Cars
+      </a>
+      <a href="my-garage.html" class="sb-item">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><rect x="9" y="14" width="6" height="6"/></svg>
+        My Garage
+      </a>
+      <a href="shop.html" class="sb-item">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h2l2.6 12.6a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L21 7H6"/></svg>
+        Shop
+      </a>
+      <a href="services.html" class="sb-item">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.1-3.1a5 5 0 0 1-6.7 6.7l-6.5 6.5a2 2 0 1 1-2.8-2.8l6.5-6.5a5 5 0 0 1 6.7-6.7l-3.1 3.1z"/></svg>
+        Services
+      </a>
+      <a href="community.html" class="sb-item">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2s6.5 2.6 6.5 6.2"/><circle cx="17.5" cy="8.5" r="2.4"/><path d="M16 13.6c2.6.4 4.5 2.5 4.5 5.2"/></svg>
+        Community
+      </a>
+      <a href="support.html" class="sb-item">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 13a9 9 0 0 1 18 0"/><path d="M21 13v4a2 2 0 0 1-2 2h-1v-7h1a2 2 0 0 1 2 2z"/><path d="M3 13v4a2 2 0 0 0 2 2h1v-7H5a2 2 0 0 0-2 2z"/></svg>
+        Support
+      </a>
+    </nav>
+    <div class="sb-foot">
+      <button class="sb-item sb-logout" id="logoutBtn">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Log Out
+      </button>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <button class="sb-toggle" id="sbToggle" aria-label="Open menu">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+
+      <div class="welcome" id="welcome">Welcome back, <span id="welcomeName">there</span> 👋</div>
+
+      <div class="search-wrap">
+        <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search anything…" autocomplete="off"/>
+        <div class="search-results" id="searchResults"></div>
+      </div>
+
+      <div class="top-end">
+        <div class="panel-wrap">
+          <button class="icon-btn" id="bellBtn" aria-label="Notifications">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 6.5H4.5C4.5 13.5 6 12 6 8z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+            <span class="bell-badge" id="bellBadge">3</span>
+          </button>
+          <div class="panel" id="bellPanel">
+            <div class="panel-head"><h4>Notifications</h4><button id="markAllRead">Mark all read</button></div>
+            <div class="panel-body" id="notifList"></div>
+          </div>
+        </div>
+
+        <div class="panel-wrap">
+          <button class="profile-btn" id="profileBtn">
+            <span class="avatar" id="avatarInit">A</span>
+            <span class="profile-name" id="profileName">Account</span>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="panel" id="profilePanel" style="width:240px;">
+            <a href="profile.html" class="menu-item">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              My Profile
+            </a>
+            <a href="profile.html#account" class="menu-item">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+              Account Settings
+            </a>
+            <a href="profile.html#security" class="menu-item">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3l8 3.5v5C20 16.5 16.5 20 12 21c-4.5-1-8-4.5-8-9.5v-5L12 3z"/></svg>
+              Security
+            </a>
+            <a href="profile.html#payment" class="menu-item">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2.5"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              Payment Methods
+            </a>
+            <a href="profile.html#notifications" class="menu-item">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 6.5H4.5C4.5 13.5 6 12 6 8z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+              Notifications
+            </a>
+            <div class="menu-sep"></div>
+            <button class="menu-item danger" id="logoutBtn2">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+      <div class="page-head">
+        <h1>LUXA Club</h1>
+        <p>Your points, tier, exclusive offers, and members-only experiences.</p>
+      </div>
+
+      <section class="section">
+        <div class="club-hero">
+          <div class="club-hero-in">
+            <p class="club-hero-eyebrow">LUXA Club</p>
+            <h1>Welcome back, <span id="clubName">Antonio</span>.</h1>
+            <p>Earn points on every purchase, service visit, and referral — then redeem them for exclusive offers, VIP events, and tier-based perks.</p>
+          </div>
+          <div class="club-points-card">
+            <span class="club-tier-badge" id="clubBadge">GOLD</span>
+            <div class="pts" id="clubPts">1,250 pts</div>
+            <div class="pts-sub" id="clubTierLabel">Gold Member</div>
+            <div class="club-progress-track"><div class="club-progress-fill" id="clubProgressFill" style="width:0%;"></div></div>
+            <div class="club-progress-label" id="clubProgressLabel">Calculating progress…</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><h2>Membership Tiers</h2><p>Earn more points to unlock the next tier automatically.</p></div>
+        </div>
+        <div class="tier-grid" id="tierGrid"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><h2>Exclusive Offers</h2><p>Available to LUXA Club members only.</p></div>
+        </div>
+        <div class="offer-grid" id="offerGrid"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><h2>VIP Events</h2><p>Members-only experiences — RSVP to reserve your spot.</p></div>
+        </div>
+        <div class="event-grid" id="vipEventGrid"></div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div><h2>Member Benefits</h2><p>What every LUXA Club member gets, regardless of tier.</p></div>
+        </div>
+        <div class="benefit-grid">
+          <div class="benefit-card">
+            <div class="benefit-ic"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+            <h4>Priority Booking</h4>
+            <p>Skip the queue for test drives and service appointments at any LUXA showroom.</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-ic"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 13a9 9 0 0 1 18 0"/><path d="M21 13v4a2 2 0 0 1-2 2h-1v-7h1a2 2 0 0 1 2 2z"/><path d="M3 13v4a2 2 0 0 0 2 2h1v-7H5a2 2 0 0 0-2 2z"/></svg></div>
+            <h4>Dedicated Support Line</h4>
+            <p>A direct line to LUXA support for faster answers on orders, service, and warranty.</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-ic"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 11 14 9 22 21 10 13 10 13 2"/></svg></div>
+            <h4>Early Access</h4>
+            <p>Be first in line to reserve new vehicle launches before they're open to the public.</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-ic"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div>
+            <h4>Birthday Bonus</h4>
+            <p>Receive a one-time points bonus on your account anniversary each year.</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-ic"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg></div>
+            <h4>Referral Rewards</h4>
+            <p>Earn points whenever someone you refer completes a vehicle purchase.</p>
+          </div>
+          <div class="benefit-card">
+            <div class="benefit-ic"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2.5"/><line x1="2" y1="10" x2="22" y2="10"/></svg></div>
+            <h4>Member Pricing</h4>
+            <p>Special pricing on select accessories and services, visible at checkout.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head"><div><h2>Ways to Earn Points</h2></div></div>
+        <div class="earn-note">
+          <div class="earn-item"><b>1 pt / $1 spent</b><span>On vehicle purchases, accessories, and service visits.</span></div>
+          <div class="earn-item"><b>+50 pts</b><span>Completing a test drive.</span></div>
+          <div class="earn-item"><b>+200 pts</b><span>Successful referral purchase.</span></div>
+          <div class="earn-item"><b>+25 pts</b><span>Attending a LUXA Club event.</span></div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="app-footer">
+      <span>© 2026 LUXA. All rights reserved.</span>
+      <div class="f-links">
+        <a href="what-is-luxa.html">About LUXA</a>
+        <a href="careers.html">Careers</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+      </div>
+      <div class="f-social">
+        <a href="#" title="Update with official handle" aria-label="Instagram"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        <a href="#" title="Update with official handle" aria-label="X"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg></a>
+        <a href="#" title="Update with official handle" aria-label="LinkedIn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><line x1="7" y1="10" x2="7" y2="16"/><line x1="7" y1="7" x2="7" y2="7.01"/><path d="M11 16v-4a2 2 0 0 1 4 0v4"/><line x1="11" y1="10" x2="11" y2="16"/></svg></a>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script>
+/* ── Toast system ── */
+function toast(msg,type='info',ms=4000){
+  const c=document.getElementById('toasts'),el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.textContent=msg;
+  c.appendChild(el);
+  if(ms>0)setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),200);},ms);
+}
+
+/* ── Firebase config (same pattern as login/signup/dashboard) ── */
+const FB_CONFIG = {
+  apiKey:            window.LUXA_FB_API_KEY            || '',
+  authDomain:        window.LUXA_FB_AUTH_DOMAIN        || '',
+  projectId:         window.LUXA_FB_PROJECT_ID         || '',
+  storageBucket:     window.LUXA_FB_STORAGE_BUCKET     || '',
+  messagingSenderId: window.LUXA_FB_SENDER_ID          || '',
+  appId:             window.LUXA_FB_APP_ID             || '',
+};
+let _app, _auth;
+async function getFirebase(){
+  if(_auth) return {auth:_auth};
+  const {initializeApp,getApps}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+  const {getAuth}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+  _app=getApps().length?getApps()[0]:initializeApp(FB_CONFIG);
+  _auth=getAuth(_app);
+  return {auth:_auth};
+}
+
+/* ── Tier definitions ── */
+const TIERS=[
+  {key:'bronze',name:'Bronze',min:0,max:499,icon:'🥉',perks:['Member pricing','Birthday bonus points','Referral rewards']},
+  {key:'silver',name:'Silver',min:500,max:1199,icon:'🥈',perks:['Everything in Bronze','Priority booking','+10% bonus points']},
+  {key:'gold',name:'Gold',min:1200,max:2999,icon:'🥇',perks:['Everything in Silver','Dedicated support line','Early access to launches']},
+  {key:'platinum',name:'Platinum',min:3000,max:Infinity,icon:'💎',perks:['Everything in Gold','VIP event invitations','Complimentary annual detailing']},
+];
+function tierForPoints(pts){ return TIERS.find(t=>pts>=t.min&&pts<=t.max) || TIERS[0]; }
+
+function renderTiers(currentPts){
+  const current=tierForPoints(currentPts);
+  document.getElementById('tierGrid').innerHTML=TIERS.map(t=>`
+    <div class="tier-card tier-${t.key} ${t.key===current.key?'current':''}">
+      ${t.key===current.key?'<span class="tier-current-tag">YOUR TIER</span>':''}
+      <div class="tier-ic">${t.icon}</div>
+      <h4>${t.name}</h4>
+      <div class="tier-range">${t.max===Infinity?`${t.min.toLocaleString()}+ pts`:`${t.min.toLocaleString()}–${t.max.toLocaleString()} pts`}</div>
+      <ul class="tier-perks">${t.perks.map(p=>`<li>${p}</li>`).join('')}</ul>
+    </div>`).join('');
+}
+
+function renderClubStatus(pts,name){
+  const tier=tierForPoints(pts);
+  document.getElementById('clubName').textContent=name;
+  document.getElementById('clubBadge').textContent=tier.name.toUpperCase();
+  document.getElementById('clubPts').textContent=pts.toLocaleString()+' pts';
+  document.getElementById('clubTierLabel').textContent=tier.name+' Member';
+  if(tier.max===Infinity){
+    document.getElementById('clubProgressFill').style.width='100%';
+    document.getElementById('clubProgressLabel').textContent="You've reached the highest tier — Platinum.";
+  }else{
+    const next=TIERS[TIERS.indexOf(tier)+1];
+    const span=tier.max-tier.min+1, into=pts-tier.min;
+    const pct=Math.min(100,Math.max(0,(into/span)*100));
+    document.getElementById('clubProgressFill').style.width=pct+'%';
+    document.getElementById('clubProgressLabel').textContent=`${(next.min-pts).toLocaleString()} pts to ${next.name}`;
+  }
+  renderTiers(pts);
+}
+
+/* ── Auth gate ── */
+(async function authGate(){
+  if(!FB_CONFIG.apiKey){
+    // Firebase not configured yet — show the page with placeholder demo data
+    // so the UI can be reviewed/tested before Firebase credentials are wired in.
+    document.getElementById('welcomeName').textContent='Antonio';
+    document.getElementById('profileName').textContent='Antonio';
+    document.getElementById('avatarInit').textContent='A';
+    renderClubStatus(1250,'Antonio');
+    return;
+  }
+  const {auth}=await getFirebase();
+  const {onAuthStateChanged,signOut}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+  onAuthStateChanged(auth,async(user)=>{
+    if(!user){ window.location.href='login.html'; return; }
+    const name=(user.displayName||user.email||'there').split(' ')[0].split('@')[0];
+    document.getElementById('welcomeName').textContent=name;
+    document.getElementById('profileName').textContent=name;
+    document.getElementById('avatarInit').textContent=name.charAt(0).toUpperCase();
+    let pts=0; // honest default for a real member with no recorded activity yet
+    try{
+      const {getFirestore,doc,getDoc}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      const db=getFirestore(_app);
+      const snap=await getDoc(doc(db,'users',user.uid));
+      if(snap.exists() && typeof snap.data().clubPoints==='number') pts=snap.data().clubPoints;
+    }catch(err){ /* Firestore not reachable yet — fall back to 0 pts, never fabricate a balance */ }
+    renderClubStatus(pts,name);
+  });
+  window._luxaSignOut=async()=>{ await signOut(auth); };
+})();
+
+async function doLogout(){
+  try{
+    if(window._luxaSignOut) await window._luxaSignOut();
+  }catch(e){}
+  toast('You have successfully logged out.','success');
+  setTimeout(()=>{ window.location.href='login.html'; },900);
+}
+document.getElementById('logoutBtn').addEventListener('click',doLogout);
+document.getElementById('logoutBtn2').addEventListener('click',doLogout);
+
+/* ── Mobile sidebar ── */
+const sidebar=document.getElementById('sidebar'),sbOverlay=document.getElementById('sbOverlay');
+document.getElementById('sbToggle').addEventListener('click',()=>{sidebar.classList.add('open');sbOverlay.classList.add('show');});
+sbOverlay.addEventListener('click',()=>{sidebar.classList.remove('open');sbOverlay.classList.remove('show');});
+
+/* ── Dropdown panels (bell + profile) ── */
+function setupPanel(btnId,panelId){
+  const btn=document.getElementById(btnId),panel=document.getElementById(panelId);
+  btn.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    const willOpen=!panel.classList.contains('open');
+    document.querySelectorAll('.panel.open').forEach(p=>p.classList.remove('open'));
+    if(willOpen) panel.classList.add('open');
+  });
+}
+setupPanel('bellBtn','bellPanel');
+setupPanel('profileBtn','profilePanel');
+document.addEventListener('click',()=>document.querySelectorAll('.panel.open').forEach(p=>p.classList.remove('open')));
+
+/* ── Notifications (same seed list as dashboard.html, for consistency) ── */
+const NOTIFS=[
+  {ic:'🔧',title:'Your Luxa Phantom X service is due in 7 days.',time:'2h ago',unread:true},
+  {ic:'✅',title:'Your test drive booking has been confirmed.',time:'5h ago',unread:true},
+  {ic:'🚗',title:'The new Luxa Eon EV has just launched.',time:'1d ago',unread:true},
+  {ic:'💬',title:'Someone mentioned you in the Community hub.',time:'2d ago',unread:false},
+  {ic:'🎁',title:'Exclusive LUXA Club offer: 5% off your next service.',time:'4d ago',unread:false},
+];
+function renderNotifs(){
+  const list=document.getElementById('notifList');
+  const unread=NOTIFS.filter(n=>n.unread).length;
+  document.getElementById('bellBadge').style.display=unread?'flex':'none';
+  document.getElementById('bellBadge').textContent=unread;
+  if(!NOTIFS.length){ list.innerHTML='<div class="panel-empty">No notifications yet.</div>'; return; }
+  list.innerHTML=NOTIFS.map((n,i)=>`
+    <div class="notif ${n.unread?'unread':''}" data-i="${i}">
+      <div class="notif-ic">${n.ic}</div>
+      <div class="notif-txt"><p>${n.title}</p><span>${n.time}</span></div>
+      ${n.unread?'<div class="notif-dot"></div>':''}
+    </div>`).join('');
+  list.querySelectorAll('.notif').forEach(el=>el.addEventListener('click',()=>{
+    NOTIFS[+el.dataset.i].unread=false; renderNotifs();
+  }));
+}
+document.getElementById('markAllRead').addEventListener('click',()=>{NOTIFS.forEach(n=>n.unread=false);renderNotifs();});
+renderNotifs();
+
+/* ── Search ── */
+const SEARCH_INDEX=[
+  {group:'Club',label:'Exclusive Offers',href:'#offers'},
+  {group:'Club',label:'VIP Events',href:'#vip-events'},
+  {group:'Club',label:'Membership Tiers',href:'#tiers'},
+  {group:'Support',label:'FAQ — Frequently Asked Questions',href:'faq.html'},
+  {group:'Support',label:'Contact Support',href:'support.html'},
+  {group:'Services',label:'Schedule a Service',href:'services.html'},
+  {group:'Vehicles',label:'Browse All Vehicles',href:'cars.html'},
+  {group:'Community',label:'Community Hub',href:'community.html'},
+];
+const searchInput=document.getElementById('searchInput'),searchResults=document.getElementById('searchResults');
+function renderSearch(q){
+  if(!q){ searchResults.classList.remove('open'); return; }
+  const matches=SEARCH_INDEX.filter(it=>it.label.toLowerCase().includes(q.toLowerCase()));
+  if(!matches.length){ searchResults.innerHTML='<div class="sr-empty">No results for "'+q+'"</div>'; searchResults.classList.add('open'); return; }
+  const groups={};
+  matches.forEach(m=>{(groups[m.group]=groups[m.group]||[]).push(m);});
+  searchResults.innerHTML=Object.entries(groups).map(([g,items])=>`
+    <div class="sr-group">${g}</div>
+    ${items.map(it=>`<a class="sr-item" href="${it.href}"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/></svg>${it.label}</a>`).join('')}`).join('');
+  searchResults.classList.add('open');
+}
+searchInput.addEventListener('input',e=>renderSearch(e.target.value.trim()));
+searchInput.addEventListener('focus',e=>{if(e.target.value.trim())renderSearch(e.target.value.trim());});
+document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))searchResults.classList.remove('open');});
+
+/* ── Exclusive Offers — locally tracked redemption (no real payment/discount backend yet) ── */
+const OFFERS=[
+  {id:'off-service5',title:'5% Off Your Next Service',desc:'Applies to any scheduled maintenance visit at a LUXA showroom.',expiry:'Expires Dec 31, 2026',ic:'🔧'},
+  {id:'off-detail',title:'Complimentary Detailing',desc:'One free full detailing session at any LUXA showroom this quarter.',expiry:'Expires Sep 30, 2026',ic:'✨'},
+  {id:'off-accessory10',title:'10% Off Accessories',desc:'Discount on any accessory purchase in the Shop.',expiry:'Expires Oct 31, 2026',ic:'🛍️'},
+  {id:'off-charging',title:'Free Supercharging Credit',desc:'$25 charging credit for EV owners in the LUXA network.',expiry:'Expires Nov 15, 2026',ic:'⚡'},
+];
+const LS_OFFERS_KEY='luxaRedeemedOffers';
+function loadRedeemed(){ return new Set(JSON.parse(localStorage.getItem(LS_OFFERS_KEY)||'[]')); }
+function saveRedeemed(set){ localStorage.setItem(LS_OFFERS_KEY,JSON.stringify([...set])); }
+function genCode(id){ return 'LUXA-'+id.replace('off-','').toUpperCase().slice(0,4)+'-'+Math.abs(id.length*9973+7).toString(36).toUpperCase().slice(0,4); }
+
+function renderOffers(){
+  const redeemed=loadRedeemed();
+  document.getElementById('offerGrid').innerHTML=OFFERS.map(o=>`
+    <div class="offer-card" id="${o.id}">
+      <div class="offer-ic">${o.ic}</div>
+      <h4>${o.title}</h4>
+      <p>${o.desc}</p>
+      <div class="offer-expiry">${o.expiry}</div>
+      <button class="offer-redeem ${redeemed.has(o.id)?'redeemed':''}" data-id="${o.id}">${redeemed.has(o.id)?'Redeemed ✓':'Redeem Offer'}</button>
+    </div>`).join('');
+  document.querySelectorAll('.offer-redeem').forEach(btn=>btn.addEventListener('click',()=>{
+    const id=btn.dataset.id;
+    const set=loadRedeemed();
+    if(set.has(id)) return;
+    set.add(id);
+    saveRedeemed(set);
+    btn.classList.add('redeemed');
+    btn.textContent='Redeemed ✓';
+    const code=genCode(id);
+    toast(`Offer saved! Show code ${code} to your dealer or service advisor. Online redemption is coming soon.`,'success',6000);
+  }));
+}
+renderOffers();
+
+/* ── VIP Events — localStorage-tracked RSVPs (separate from public Community events) ── */
+const VIP_EVENTS=[
+  {id:'vip-trackday',date:'Jul 25, 2026',title:'Members-Only Track Day',loc:'Westside Motorsport Park'},
+  {id:'vip-preview',date:'Aug 9, 2026',title:'VIP Concierge Service Preview',loc:'Luxa Showroom — Downtown'},
+  {id:'vip-launch',date:'Sep 20, 2026',title:'Private Launch Reveal',loc:'Luxa Innovation Lab — Airport District'},
+  {id:'vip-dinner',date:'Oct 4, 2026',title:'LUXA Club Member Dinner',loc:'Harbor Court Pavilion'},
+];
+const LS_VIP_KEY='luxaClubRsvp';
+function loadVipRsvp(){ return new Set(JSON.parse(localStorage.getItem(LS_VIP_KEY)||'[]')); }
+function saveVipRsvp(set){ localStorage.setItem(LS_VIP_KEY,JSON.stringify([...set])); }
+function renderVipEvents(){
+  const joined=loadVipRsvp();
+  document.getElementById('vipEventGrid').innerHTML=VIP_EVENTS.map(ev=>`
+    <div class="event-card">
+      <div class="event-date">
+        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        ${ev.date}
+      </div>
+      <h4>${ev.title}</h4>
+      <div class="event-loc">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 6-9 12-9 12S3 16 3 10a9 9 0 1 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        ${ev.loc}
+      </div>
+      <button class="event-join ${joined.has(ev.id)?'joined':''}" data-id="${ev.id}">${joined.has(ev.id)?'Joined ✓':'RSVP'}</button>
+    </div>`).join('');
+  document.querySelectorAll('.event-join').forEach(btn=>btn.addEventListener('click',()=>{
+    const id=btn.dataset.id;
+    const set=loadVipRsvp();
+    if(set.has(id)){
+      set.delete(id);
+      btn.classList.remove('joined');
+      btn.textContent='RSVP';
+    }else{
+      set.add(id);
+      btn.classList.add('joined');
+      btn.textContent='Joined ✓';
+      toast("You're in! Event details will be emailed to you closer to the date.",'success');
+    }
+    saveVipRsvp(set);
+  }));
+}
+renderVipEvents();
+</script>
+</body>
+</html>

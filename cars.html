@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Vehicle Catalog — LUXA</title>
+<meta name="description" content="Browse the full Luxa vehicle catalog — luxury sedans, SUVs, sports cars and electric vehicles."/>
+<meta name="theme-color" content="#F4F6F9"/>
+<meta name="robots" content="noindex"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#F4F6F9; --card:#FFFFFF; --border:#E7EAEF; --ink:#12141C; --ink-60:#5B616E; --ink-40:#8B919E;
+  --blue:#2563EB; --blue-deep:#1D4ED8; --blue-soft:#EAF1FF;
+  --radius:16px; --shadow:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.06);
+  --shadow-lg:0 12px 32px rgba(16,24,40,.12);
+}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter','Helvetica Neue',sans-serif;-webkit-font-smoothing:antialiased;}
+a{color:inherit;}
+button{font-family:inherit;}
+
+/* ── App shell ── */
+.app{display:flex;min-height:100vh;}
+
+/* ── Sidebar ── */
+.sidebar{width:248px;background:#fff;border-right:1px solid var(--border);position:fixed;top:0;left:0;height:100vh;
+  display:flex;flex-direction:column;padding:22px 16px;z-index:40;transition:transform .25s;}
+.sb-logo{font-size:21px;font-weight:800;letter-spacing:-.03em;padding:4px 12px 26px;text-decoration:none;color:var(--ink);}
+.sb-nav{display:flex;flex-direction:column;gap:3px;flex:1;}
+.sb-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:12px;color:var(--ink-60);
+  font-size:14.5px;font-weight:600;text-decoration:none;transition:background .16s,color .16s;}
+.sb-item svg{flex-shrink:0;opacity:.85;}
+.sb-item:hover{background:#F2F4F8;color:var(--ink);}
+.sb-item.active{background:var(--blue-soft);color:var(--blue-deep);}
+.sb-item.active svg{opacity:1;}
+.sb-foot{border-top:1px solid var(--border);padding-top:14px;margin-top:8px;}
+.sb-logout{background:none;border:none;width:100%;cursor:pointer;}
+
+/* ── Mobile sidebar toggle ── */
+.sb-toggle{display:none;width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:#fff;
+  align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.sb-overlay{display:none;position:fixed;inset:0;background:rgba(10,12,18,.4);z-index:39;}
+@media(max-width:920px){
+  .sidebar{transform:translateX(-100%);box-shadow:var(--shadow-lg);}
+  .sidebar.open{transform:translateX(0);}
+  .sb-overlay.show{display:block;}
+  .sb-toggle{display:flex;}
+  .main-wrap{margin-left:0 !important;}
+}
+
+/* ── Main ── */
+.main-wrap{margin-left:248px;flex:1;display:flex;flex-direction:column;min-width:0;}
+.topbar{display:flex;align-items:center;gap:16px;padding:16px 32px;border-bottom:1px solid var(--border);
+  background:#fff;position:sticky;top:0;z-index:30;}
+.welcome{font-size:15px;font-weight:700;white-space:nowrap;}
+.welcome span{opacity:.55;font-weight:600;}
+.search-wrap{flex:1;max-width:420px;position:relative;}
+.search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);opacity:.4;pointer-events:none;}
+.search-input{width:100%;padding:10px 14px 10px 38px;border-radius:10px;border:1px solid var(--border);
+  background:#F7F8FA;font-size:13.5px;color:var(--ink);outline:none;transition:border-color .15s,background .15s;}
+.search-input:focus{border-color:var(--blue);background:#fff;}
+.search-results{position:absolute;top:calc(100% + 8px);left:0;right:0;background:#fff;border:1px solid var(--border);
+  border-radius:14px;box-shadow:var(--shadow-lg);max-height:360px;overflow-y:auto;opacity:0;visibility:hidden;
+  transform:translateY(-6px);transition:opacity .16s,transform .16s,visibility .16s;z-index:35;}
+.search-results.open{opacity:1;visibility:visible;transform:translateY(0);}
+.sr-group{padding:10px 14px 4px;font-size:10.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-40);}
+.sr-item{display:flex;align-items:center;gap:10px;padding:9px 14px;font-size:13.5px;font-weight:600;text-decoration:none;
+  color:var(--ink);transition:background .12s;}
+.sr-item:hover{background:#F7F8FA;}
+.sr-item svg{opacity:.4;flex-shrink:0;}
+.sr-empty{padding:24px 14px;text-align:center;font-size:13px;color:var(--ink-40);}
+.top-end{margin-left:auto;display:flex;align-items:center;gap:12px;flex-shrink:0;}
+.icon-btn{width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:#fff;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;flex-shrink:0;}
+.icon-btn:hover{background:#F7F8FA;}
+.bell-badge{position:absolute;top:-4px;right:-4px;background:#EF4444;color:#fff;font-size:10px;font-weight:700;
+  min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;}
+.profile-btn{display:flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:24px;border:1px solid var(--border);
+  background:#fff;cursor:pointer;flex-shrink:0;}
+.profile-btn:hover{background:#F7F8FA;}
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#2563EB,#7C3AED);color:#fff;
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12.5px;flex-shrink:0;}
+.profile-name{font-size:13.5px;font-weight:700;}
+.profile-btn svg{opacity:.4;}
+
+/* ── Dropdown panels ── */
+.panel-wrap{position:relative;}
+.panel{position:absolute;top:50px;right:0;width:340px;background:#fff;border:1px solid var(--border);border-radius:14px;
+  box-shadow:var(--shadow-lg);opacity:0;visibility:hidden;transform:translateY(-6px);
+  transition:opacity .18s,transform .18s,visibility .18s;z-index:50;overflow:hidden;}
+.panel.open{opacity:1;visibility:visible;transform:translateY(0);}
+.panel-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);}
+.panel-head h4{font-size:14px;font-weight:700;}
+.panel-head button{background:none;border:none;font-size:12px;font-weight:600;color:var(--blue);cursor:pointer;}
+.panel-body{max-height:360px;overflow-y:auto;}
+.notif{display:flex;gap:12px;padding:13px 16px;border-bottom:1px solid #F2F4F8;cursor:pointer;transition:background .14s;}
+.notif:hover{background:#F9FAFB;}
+.notif:last-child{border-bottom:none;}
+.notif.unread{background:#F5F9FF;}
+.notif-ic{width:34px;height:34px;border-radius:10px;background:var(--blue-soft);color:var(--blue-deep);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.notif-txt p{font-size:13px;font-weight:600;line-height:1.4;margin-bottom:2px;}
+.notif-txt span{font-size:11.5px;color:var(--ink-40);}
+.notif-dot{width:7px;height:7px;border-radius:50%;background:var(--blue);margin-left:auto;margin-top:5px;flex-shrink:0;}
+.panel-empty{padding:32px 16px;text-align:center;font-size:13px;color:var(--ink-40);}
+.menu-item{display:flex;align-items:center;gap:11px;padding:11px 16px;font-size:13.5px;font-weight:600;text-decoration:none;
+  color:var(--ink);transition:background .12s;border:none;background:none;width:100%;text-align:left;cursor:pointer;}
+.menu-item svg{opacity:.45;flex-shrink:0;}
+.menu-item:hover{background:#F7F8FA;}
+.menu-sep{border-top:1px solid var(--border);margin:4px 0;}
+.menu-item.danger{color:#DC2626;}
+.menu-item.danger svg{opacity:.7;}
+
+/* ── Content layout ── */
+.content{padding:28px 32px 60px;}
+.section{margin-bottom:32px;}
+.section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.section-head h2{font-size:17px;font-weight:800;letter-spacing:-.01em;}
+.section-link{font-size:13px;font-weight:700;color:var(--blue);text-decoration:none;display:flex;align-items:center;gap:4px;}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:11px;font-size:13.5px;font-weight:700;
+  text-decoration:none;border:none;cursor:pointer;transition:transform .16s,opacity .16s,background .16s;}
+.btn-primary{background:#fff;color:#0B0E16;}
+.btn-primary:hover{transform:translateY(-2px);}
+.btn-blue{background:var(--blue);color:#fff;}
+.btn-blue:hover{background:var(--blue-deep);transform:translateY(-2px);}
+.btn-outline{background:#fff;color:var(--ink);border:1px solid var(--border);}
+.btn-outline:hover{background:#F7F8FA;}
+
+/* ── Page head ── */
+.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:22px;}
+.page-head h1{font-size:24px;font-weight:800;letter-spacing:-.02em;margin-bottom:4px;}
+.page-head p{font-size:13.5px;color:var(--ink-60);}
+
+/* ── Catalog search ── */
+.cat-search-wrap{max-width:420px;position:relative;margin-bottom:22px;}
+.cat-search-wrap .search-icon{left:13px;}
+.cat-search-wrap .search-input{padding-left:38px;}
+
+/* ── Category tabs ── */
+.tab-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:18px;border-bottom:1px solid var(--border);}
+.tab-btn{flex-shrink:0;padding:11px 18px;border-radius:10px 10px 0 0;font-size:13.5px;font-weight:700;color:var(--ink-60);
+  background:none;border:none;cursor:pointer;position:relative;white-space:nowrap;transition:color .15s;}
+.tab-btn:hover{color:var(--ink);}
+.tab-btn.active{color:var(--blue-deep);}
+.tab-btn.active::after{content:'';position:absolute;left:6px;right:6px;bottom:-1px;height:2px;background:var(--blue);border-radius:2px;}
+
+/* ── Body type pills ── */
+.pill-row{display:flex;gap:14px;overflow-x:auto;padding:2px 2px 6px;margin-bottom:26px;}
+.pill{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:74px;cursor:pointer;text-decoration:none;
+  color:inherit;background:none;border:none;font-family:inherit;}
+.pill-ic{width:54px;height:54px;border-radius:50%;background:#fff;border:1px solid var(--border);color:var(--ink-60);
+  display:flex;align-items:center;justify-content:center;transition:border-color .16s,color .16s,background .16s;}
+.pill:hover .pill-ic{border-color:var(--blue);color:var(--blue);}
+.pill.active .pill-ic{border-color:var(--blue);color:#fff;background:var(--blue);}
+.pill span{font-size:12px;font-weight:600;color:var(--ink-60);}
+.pill.active span{color:var(--blue-deep);}
+
+/* ── Results meta ── */
+.results-meta{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;}
+.results-count{font-size:13px;color:var(--ink-60);font-weight:600;}
+.compare-toggle{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:700;color:var(--blue-deep);
+  background:var(--blue-soft);border:none;padding:9px 14px;border-radius:10px;cursor:pointer;}
+.compare-toggle:hover{background:#DCE9FF;}
+
+/* ── Vehicle cards ── */
+.veh-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+@media(max-width:1180px){.veh-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:760px){.veh-grid{grid-template-columns:1fr;}}
+.veh-card{background:var(--card);border:1px solid var(--border);border-radius:18px;overflow:hidden;transition:box-shadow .18s;position:relative;}
+.veh-card:hover{box-shadow:var(--shadow-lg);}
+.veh-img{position:relative;aspect-ratio:16/9;background:linear-gradient(135deg,#E9EDF3,#D7DEE9);display:flex;align-items:center;justify-content:center;}
+.veh-img svg{width:64px;height:64px;opacity:.25;}
+.veh-fav{position:absolute;top:12px;right:12px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;color:#9AA1AE;transition:color .16s,transform .16s;}
+.veh-fav:hover{transform:scale(1.08);}
+.veh-fav.active{color:#EF4444;}
+.veh-fav.active svg{fill:currentColor;}
+.veh-check{position:absolute;top:12px;left:12px;width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,.92);
+  border:2px solid var(--border);display:none;align-items:center;justify-content:center;cursor:pointer;color:#fff;}
+.compare-mode .veh-check{display:flex;}
+.veh-check.checked{background:var(--blue);border-color:var(--blue);}
+.veh-body{padding:16px 18px 18px;}
+.veh-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:12px;gap:8px;}
+.veh-name{font-size:15.5px;font-weight:800;}
+.veh-price{font-size:15.5px;font-weight:800;color:var(--blue-deep);white-space:nowrap;}
+.veh-stats{display:flex;gap:18px;margin-bottom:16px;}
+.veh-stat{font-size:11.5px;color:var(--ink-40);}
+.veh-stat b{display:block;font-size:13.5px;color:var(--ink);font-weight:700;margin-bottom:1px;}
+.veh-actions{display:flex;gap:10px;}
+.va-btn{flex:1;text-align:center;padding:10px;border-radius:10px;font-size:12.5px;font-weight:700;cursor:pointer;
+  text-decoration:none;border:1px solid var(--border);background:#fff;color:var(--ink);transition:background .15s;}
+.va-btn:hover{background:#F7F8FA;}
+.va-btn.solid{background:var(--blue);color:#fff;border-color:var(--blue);}
+.va-btn.solid:hover{background:var(--blue-deep);}
+.empty-state{padding:60px 20px;text-align:center;color:var(--ink-40);}
+.empty-state svg{opacity:.3;margin-bottom:14px;}
+.empty-state p{font-size:14px;font-weight:600;}
+
+/* ── Sticky compare bar ── */
+.compare-bar{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(120%);background:#12141C;color:#fff;
+  border-radius:16px;padding:14px 16px 14px 20px;display:flex;align-items:center;gap:16px;box-shadow:0 18px 44px rgba(0,0,0,.28);
+  z-index:60;transition:transform .22s ease;max-width:92vw;}
+.compare-bar.show{transform:translateX(-50%) translateY(0);}
+.compare-bar span{font-size:13.5px;font-weight:700;white-space:nowrap;}
+.compare-chips{display:flex;gap:8px;flex-wrap:wrap;}
+.compare-chip{background:rgba(255,255,255,.12);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;
+  display:flex;align-items:center;gap:6px;}
+.compare-chip button{background:none;border:none;color:rgba(255,255,255,.6);cursor:pointer;font-size:13px;line-height:1;}
+.compare-bar-actions{display:flex;gap:10px;margin-left:4px;}
+.cb-clear{background:none;border:none;color:rgba(255,255,255,.55);font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.cb-go{background:var(--blue);color:#fff;border:none;padding:10px 18px;border-radius:10px;font-size:12.5px;font-weight:700;
+  cursor:pointer;white-space:nowrap;}
+.cb-go:hover{background:var(--blue-deep);}
+.cb-go:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── Compare table modal ── */
+.compare-table-wrap{overflow-x:auto;}
+.compare-table{width:100%;border-collapse:collapse;font-size:13px;min-width:480px;}
+.compare-table th,.compare-table td{padding:12px 14px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap;}
+.compare-table th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-40);font-weight:700;background:#F7F8FA;}
+.compare-table td.row-label{font-weight:700;color:var(--ink-60);background:#FAFBFC;}
+.compare-table td b{color:var(--blue-deep);}
+
+/* ── Modals ── */
+.modal-ov{position:fixed;inset:0;background:rgba(10,12,18,.5);z-index:100;display:flex;align-items:center;justify-content:center;
+  padding:20px;opacity:0;visibility:hidden;transition:opacity .2s,visibility .2s;}
+.modal-ov.open{opacity:1;visibility:visible;}
+.modal{background:#fff;border-radius:20px;max-width:440px;width:100%;max-height:88vh;overflow-y:auto;
+  transform:translateY(14px);transition:transform .2s;box-shadow:0 24px 60px rgba(0,0,0,.25);}
+.modal.modal-wide{max-width:680px;}
+.modal-ov.open .modal{transform:translateY(0);}
+.modal-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-bottom:1px solid var(--border);}
+.modal-head h3{font-size:16px;font-weight:800;}
+.modal-x{width:32px;height:32px;border-radius:9px;border:none;background:#F4F6F9;display:flex;align-items:center;
+  justify-content:center;cursor:pointer;color:var(--ink-60);flex-shrink:0;}
+.modal-body{padding:22px;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12.5px;font-weight:700;margin-bottom:7px;color:var(--ink-60);}
+.field input,.field select{width:100%;padding:11px 13px;border-radius:10px;border:1px solid var(--border);
+  font-size:14px;color:var(--ink);background:#F7F8FA;outline:none;transition:border-color .15s;font-family:inherit;}
+.field input:focus,.field select:focus{border-color:var(--blue);background:#fff;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.modal-submit{width:100%;padding:13px;border-radius:11px;background:var(--blue);color:#fff;font-size:14px;font-weight:700;
+  border:none;cursor:pointer;margin-top:6px;transition:background .15s;}
+.modal-submit:hover{background:var(--blue-deep);}
+.modal-submit:disabled{opacity:.5;cursor:not-allowed;}
+
+/* ── Toasts ── */
+.toasts{position:fixed;top:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:10px;}
+.toast{display:flex;align-items:center;gap:10px;padding:13px 16px;border-radius:12px;background:#fff;
+  box-shadow:var(--shadow-lg);font-size:13px;font-weight:600;min-width:260px;border-left:4px solid var(--blue);
+  animation:slideIn .25s ease;}
+.toast.out{animation:slideOut .2s ease forwards;}
+.toast.success{border-left-color:#16A34A;}
+.toast.error{border-left-color:#DC2626;}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
+@keyframes slideOut{to{opacity:0;transform:translateX(20px);}}
+
+/* ── Footer ── */
+.app-footer{border-top:1px solid var(--border);padding:24px 32px;display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:14px;color:var(--ink-40);font-size:12.5px;}
+.app-footer .f-links{display:flex;gap:18px;flex-wrap:wrap;}
+.app-footer a{text-decoration:none;color:var(--ink-60);}
+.app-footer a:hover{color:var(--blue);}
+.f-social{display:flex;gap:10px;}
+.f-social a{width:30px;height:30px;border-radius:9px;background:#F4F6F9;display:flex;align-items:center;justify-content:center;}
+
+@media(max-width:600px){.content{padding:20px 16px 50px;}.topbar{padding:14px 16px;}.welcome{display:none;}}
+</style>
+</head>
+<body>
+
+<div class="toasts" id="toasts"></div>
+
+<div class="app">
+  <div class="sb-overlay" id="sbOverlay"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <a href="dashboard.html" class="sb-logo">LUXA</a>
+    <nav class="sb-nav">
+      <a href="dashboard.html" class="sb-item">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+        Dashboard
+      </a>
+      <a href="cars.html" class="sb-item active">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 13l1.5-5A2 2 0 0 1 6.4 6.5h11.2a2 2 0 0 1 1.9 1.5L21 13"/><rect x="2" y="13" width="20" height="6" rx="2"/><circle cx="7" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg>
+        Cars
+      </a>
+      <a href="my-garage.html" class="sb-item">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/><rect x="9" y="14" width="6" height="6"/></svg>
+        My Garage
+      </a>
+      <a href="shop.html" class="sb-item">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h2l2.6 12.6a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L21 7H6"/></svg>
+        Shop
+      </a>
+      <a href="services.html" class="sb-item">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.1-3.1a5 5 0 0 1-6.7 6.7l-6.5 6.5a2 2 0 1 1-2.8-2.8l6.5-6.5a5 5 0 0 1 6.7-6.7l-3.1 3.1z"/></svg>
+        Services
+      </a>
+      <a href="community.html" class="sb-item">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6.2 6.5-6.2s6.5 2.6 6.5 6.2"/><circle cx="17.5" cy="8.5" r="2.4"/><path d="M16 13.6c2.6.4 4.5 2.5 4.5 5.2"/></svg>
+        Community
+      </a>
+      <a href="support.html" class="sb-item">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 13a9 9 0 0 1 18 0"/><path d="M21 13v4a2 2 0 0 1-2 2h-1v-7h1a2 2 0 0 1 2 2z"/><path d="M3 13v4a2 2 0 0 0 2 2h1v-7H5a2 2 0 0 0-2 2z"/></svg>
+        Support
+      </a>
+    </nav>
+    <div class="sb-foot">
+      <button class="sb-item sb-logout" id="logoutBtn">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        Log Out
+      </button>
+    </div>
+  </aside>
+
+  <div class="main-wrap">
+    <header class="topbar">
+      <button class="sb-toggle" id="sbToggle" aria-label="Open menu">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+
+      <div class="welcome" id="welcome">Welcome back, <span id="welcomeName">there</span> 👋</div>
+
+      <div class="search-wrap">
+        <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search anything…" autocomplete="off"/>
+        <div class="search-results" id="searchResults"></div>
+      </div>
+
+      <div class="top-end">
+        <div class="panel-wrap">
+          <button class="icon-btn" id="bellBtn" aria-label="Notifications">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 6.5H4.5C4.5 13.5 6 12 6 8z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+            <span class="bell-badge" id="bellBadge">3</span>
+          </button>
+          <div class="panel" id="bellPanel">
+            <div class="panel-head"><h4>Notifications</h4><button id="markAllRead">Mark all read</button></div>
+            <div class="panel-body" id="notifList"></div>
+          </div>
+        </div>
+
+        <div class="panel-wrap">
+          <button class="profile-btn" id="profileBtn">
+            <span class="avatar" id="avatarInit">A</span>
+            <span class="profile-name" id="profileName">Account</span>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="panel" id="profilePanel" style="width:240px;">
+            <a href="profile.html" class="menu-item">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+              My Profile
+            </a>
+            <a href="profile.html#account" class="menu-item">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+              Account Settings
+            </a>
+            <a href="profile.html#security" class="menu-item">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3l8 3.5v5C20 16.5 16.5 20 12 21c-4.5-1-8-4.5-8-9.5v-5L12 3z"/></svg>
+              Security
+            </a>
+            <a href="profile.html#payment" class="menu-item">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2.5"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+              Payment Methods
+            </a>
+            <a href="profile.html#notifications" class="menu-item">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 4 1.5 5.5 1.5 6.5H4.5C4.5 13.5 6 12 6 8z"/><path d="M10 19a2 2 0 0 0 4 0"/></svg>
+              Notifications
+            </a>
+            <div class="menu-sep"></div>
+            <button class="menu-item danger" id="logoutBtn2">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <div class="page-head">
+        <div>
+          <h1>Vehicle Catalog</h1>
+          <p id="resultsSubtitle">Browse the full range of Luxa vehicles.</p>
+        </div>
+      </div>
+
+      <div class="cat-search-wrap">
+        <svg class="search-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" class="search-input" id="catalogSearch" placeholder="Search vehicles by name…" autocomplete="off"/>
+      </div>
+
+      <div class="tab-row" id="tabRow">
+        <button class="tab-btn active" data-cat="">All Vehicles</button>
+        <button class="tab-btn" data-cat="sedan">Luxury Sedans</button>
+        <button class="tab-btn" data-cat="suv">SUVs</button>
+        <button class="tab-btn" data-cat="sports">Sports Cars</button>
+        <button class="tab-btn" data-cat="ev">Electric Vehicles</button>
+      </div>
+
+      <div class="pill-row" id="pillRow">
+        <button class="pill" data-type="sedan"><div class="pill-ic"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 13l1.5-5A2 2 0 0 1 6.4 6.5h11.2a2 2 0 0 1 1.9 1.5L21 13"/><rect x="2" y="13" width="20" height="6" rx="2"/></svg></div><span>Sedan</span></button>
+        <button class="pill" data-type="suv"><div class="pill-ic"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 13l1.2-5.4A2 2 0 0 1 7.1 6h9.8a2 2 0 0 1 1.9 1.6L20 13"/><rect x="2.5" y="13" width="19" height="6.5" rx="2"/></svg></div><span>SUV</span></button>
+        <button class="pill" data-type="coupe"><div class="pill-ic"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 14l3-6a2 2 0 0 1 1.8-1h10.4a2 2 0 0 1 1.8 1.1l2.5 5"/><rect x="1.5" y="14" width="21" height="5.5" rx="2"/></svg></div><span>Coupe</span></button>
+        <button class="pill" data-type="hatchback"><div class="pill-ic"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 13l1.3-5A2 2 0 0 1 6.2 6.5h8a2 2 0 0 1 1.9 1.3l2.4 5.2"/><rect x="2" y="13" width="18.5" height="6" rx="2"/></svg></div><span>Hatchback</span></button>
+        <button class="pill" data-type="convertible"><div class="pill-ic"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M2 13.5l4-4.5h12l4 4.5"/><rect x="1.5" y="13.5" width="21" height="5.5" rx="2"/></svg></div><span>Convertible</span></button>
+        <button class="pill" data-type="truck"><div class="pill-ic"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 13V8a1 1 0 0 1 1-1h7v6"/><path d="M9 13h6l3.5 3.5H22V13l-3-4h-5"/><rect x="1" y="13" width="21" height="5.5" rx="1.5"/></svg></div><span>Truck</span></button>
+      </div>
+
+      <div class="results-meta">
+        <span class="results-count" id="resultsCount">18 vehicles</span>
+        <button class="compare-toggle" id="compareToggleBtn">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 3v18M15 3v18M4 8h5M15 8h5M4 16h5M15 16h5"/></svg>
+          <span id="compareToggleLabel">Compare Vehicles</span>
+        </button>
+      </div>
+
+      <div class="veh-grid" id="vehGrid"></div>
+
+    </main>
+
+    <footer class="app-footer">
+      <span>© 2026 LUXA. All rights reserved.</span>
+      <div class="f-links">
+        <a href="what-is-luxa.html">About LUXA</a>
+        <a href="careers.html">Careers</a>
+        <a href="privacy.html">Privacy Policy</a>
+        <a href="terms.html">Terms of Service</a>
+      </div>
+      <div class="f-social">
+        <a href="#" title="Update with official handle" aria-label="Instagram"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+        <a href="#" title="Update with official handle" aria-label="X"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg></a>
+        <a href="#" title="Update with official handle" aria-label="LinkedIn"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="3"/><line x1="7" y1="10" x2="7" y2="16"/><line x1="7" y1="7" x2="7" y2="7.01"/><path d="M11 16v-4a2 2 0 0 1 4 0v4"/><line x1="11" y1="10" x2="11" y2="16"/></svg></a>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<!-- ── Sticky compare bar ── -->
+<div class="compare-bar" id="compareBar">
+  <span id="compareBarLabel">Compare (0)</span>
+  <div class="compare-chips" id="compareChips"></div>
+  <div class="compare-bar-actions">
+    <button class="cb-clear" id="cbClear">Clear</button>
+    <button class="cb-go" id="cbGo" disabled>Compare Now</button>
+  </div>
+</div>
+
+<!-- ── Booking modal ── -->
+<div class="modal-ov" id="bookOv">
+  <div class="modal">
+    <div class="modal-head"><h3>Book a Test Drive</h3><button class="modal-x" data-close>✕</button></div>
+    <div class="modal-body">
+      <form id="bookForm">
+        <div class="field"><label>Vehicle</label><select id="bookVehicle" required></select></div>
+        <div class="field"><label>Dealer</label>
+          <select id="bookDealer" required>
+            <option value="">Select a dealer…</option>
+            <option>Luxa Showroom — Downtown</option>
+            <option>Luxa Showroom — Westside</option>
+            <option>Luxa Showroom — Airport District</option>
+          </select>
+        </div>
+        <div class="field-row">
+          <div class="field"><label>Date</label><input type="date" id="bookDate" required/></div>
+          <div class="field"><label>Time</label><input type="time" id="bookTime" required/></div>
+        </div>
+        <button type="submit" class="modal-submit">Confirm Booking</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ── Compare table modal ── -->
+<div class="modal-ov" id="compareOv">
+  <div class="modal modal-wide">
+    <div class="modal-head"><h3>Compare Vehicles</h3><button class="modal-x" data-close>✕</button></div>
+    <div class="modal-body">
+      <div class="compare-table-wrap">
+        <table class="compare-table" id="compareTable"></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Toast system ── */
+function toast(msg,type='info',ms=4000){
+  const c=document.getElementById('toasts'),el=document.createElement('div');
+  el.className=`toast ${type}`;
+  el.textContent=msg;
+  c.appendChild(el);
+  if(ms>0)setTimeout(()=>{el.classList.add('out');setTimeout(()=>el.remove(),200);},ms);
+}
+
+/* ── Firebase config (same pattern as login/signup) ── */
+const FB_CONFIG = {
+  apiKey:            window.LUXA_FB_API_KEY            || '',
+  authDomain:        window.LUXA_FB_AUTH_DOMAIN        || '',
+  projectId:         window.LUXA_FB_PROJECT_ID         || '',
+  storageBucket:     window.LUXA_FB_STORAGE_BUCKET     || '',
+  messagingSenderId: window.LUXA_FB_SENDER_ID          || '',
+  appId:             window.LUXA_FB_APP_ID             || '',
+};
+let _app, _auth;
+async function getFirebase(){
+  if(_auth) return {auth:_auth};
+  const {initializeApp,getApps}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js');
+  const {getAuth}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+  _app=getApps().length?getApps()[0]:initializeApp(FB_CONFIG);
+  _auth=getAuth(_app);
+  return {auth:_auth};
+}
+
+/* ── Auth gate ── */
+(async function authGate(){
+  if(!FB_CONFIG.apiKey){
+    // Firebase not configured yet — allow viewing the page unauthenticated
+    // so the UI can be reviewed/tested before Firebase credentials are wired in.
+    document.getElementById('welcomeName').textContent='Antonio';
+    document.getElementById('profileName').textContent='Antonio';
+    document.getElementById('avatarInit').textContent='A';
+    return;
+  }
+  const {auth}=await getFirebase();
+  const {onAuthStateChanged,signOut}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
+  onAuthStateChanged(auth,(user)=>{
+    if(!user){ window.location.href='login.html'; return; }
+    const name=(user.displayName||user.email||'there').split(' ')[0].split('@')[0];
+    document.getElementById('welcomeName').textContent=name;
+    document.getElementById('profileName').textContent=name;
+    document.getElementById('avatarInit').textContent=name.charAt(0).toUpperCase();
+  });
+  window._luxaSignOut=async()=>{ await signOut(auth); };
+})();
+
+async function doLogout(){
+  try{
+    if(window._luxaSignOut) await window._luxaSignOut();
+  }catch(e){}
+  toast('You have successfully logged out.','success');
+  setTimeout(()=>{ window.location.href='login.html'; },900);
+}
+document.getElementById('logoutBtn').addEventListener('click',doLogout);
+document.getElementById('logoutBtn2').addEventListener('click',doLogout);
+
+/* ── Mobile sidebar ── */
+const sidebar=document.getElementById('sidebar'),sbOverlay=document.getElementById('sbOverlay');
+document.getElementById('sbToggle').addEventListener('click',()=>{sidebar.classList.add('open');sbOverlay.classList.add('show');});
+sbOverlay.addEventListener('click',()=>{sidebar.classList.remove('open');sbOverlay.classList.remove('show');});
+
+/* ── Dropdown panels (bell + profile) ── */
+function setupPanel(btnId,panelId){
+  const btn=document.getElementById(btnId),panel=document.getElementById(panelId);
+  btn.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    const willOpen=!panel.classList.contains('open');
+    document.querySelectorAll('.panel.open').forEach(p=>p.classList.remove('open'));
+    if(willOpen) panel.classList.add('open');
+  });
+}
+setupPanel('bellBtn','bellPanel');
+setupPanel('profileBtn','profilePanel');
+document.addEventListener('click',()=>document.querySelectorAll('.panel.open').forEach(p=>p.classList.remove('open')));
+
+/* ── Notifications ── */
+const NOTIFS=[
+  {ic:'🔧',title:'Your Luxa Phantom X service is due in 7 days.',time:'2h ago',unread:true},
+  {ic:'✅',title:'Your test drive booking has been confirmed.',time:'5h ago',unread:true},
+  {ic:'🚗',title:'The new Luxa Eon EV has just launched.',time:'1d ago',unread:true},
+  {ic:'💬',title:'Someone mentioned you in the Community hub.',time:'2d ago',unread:false},
+  {ic:'🎁',title:'Exclusive LUXA Club offer: 5% off your next service.',time:'4d ago',unread:false},
+];
+function renderNotifs(){
+  const list=document.getElementById('notifList');
+  const unread=NOTIFS.filter(n=>n.unread).length;
+  document.getElementById('bellBadge').style.display=unread?'flex':'none';
+  document.getElementById('bellBadge').textContent=unread;
+  if(!NOTIFS.length){ list.innerHTML='<div class="panel-empty">No notifications yet.</div>'; return; }
+  list.innerHTML=NOTIFS.map((n,i)=>`
+    <div class="notif ${n.unread?'unread':''}" data-i="${i}">
+      <div class="notif-ic">${n.ic}</div>
+      <div class="notif-txt"><p>${n.title}</p><span>${n.time}</span></div>
+      ${n.unread?'<div class="notif-dot"></div>':''}
+    </div>`).join('');
+  list.querySelectorAll('.notif').forEach(el=>el.addEventListener('click',()=>{
+    NOTIFS[+el.dataset.i].unread=false; renderNotifs();
+  }));
+}
+document.getElementById('markAllRead').addEventListener('click',()=>{NOTIFS.forEach(n=>n.unread=false);renderNotifs();});
+renderNotifs();
+
+/* ── Vehicle catalog (verbatim — kept in sync with dashboard.html Popular Models) ── */
+const VEHICLES=[
+  {id:'phantom-x',   name:'Luxa Phantom X',    cat:'sedan', price:45000, stat1:['510 km','Range (WLTP)'],   stat2:['4.2s','0-100 km/h']},
+  {id:'aria-s',      name:'Luxa Aria S',       cat:'sedan', price:52000, stat1:['540 km','Range (WLTP)'],   stat2:['4.0s','0-100 km/h']},
+  {id:'meridian',    name:'Luxa Meridian',     cat:'sedan', price:61500, stat1:['580 km','Range (WLTP)'],   stat2:['3.6s','0-100 km/h']},
+  {id:'solis',       name:'Luxa Solis',        cat:'sedan', price:39800, stat1:['490 km','Range (WLTP)'],   stat2:['4.8s','0-100 km/h']},
+  {id:'vertex-suv',  name:'Luxa Vertex SUV',   cat:'suv',   price:38500, stat1:['680 km','Range (WLTP)'],   stat2:['5.6s','0-100 km/h']},
+  {id:'atlas-suv',   name:'Luxa Atlas SUV',    cat:'suv',   price:47000, stat1:['620 km','Range (WLTP)'],   stat2:['5.2s','0-100 km/h']},
+  {id:'ridgeline-x', name:'Luxa Ridgeline X',  cat:'suv',   price:55500, stat1:['600 km','Range (WLTP)'],   stat2:['4.9s','0-100 km/h']},
+  {id:'horizon-7',   name:'Luxa Horizon 7',    cat:'suv',   price:68000, stat1:['590 km','Range (WLTP)'],   stat2:['4.5s','0-100 km/h']},
+  {id:'terra-gx',    name:'Luxa Terra GX',     cat:'suv',   price:41200, stat1:['540 km','Range (WLTP)'],   stat2:['5.8s','0-100 km/h']},
+  {id:'summit-pro',  name:'Luxa Summit Pro',   cat:'suv',   price:74500, stat1:['610 km','Range (WLTP)'],   stat2:['4.3s','0-100 km/h']},
+  {id:'velocity-gt', name:'Luxa Velocity GT',  cat:'sports',price:72000, stat1:['320 km/h','Top Speed'],    stat2:['3.8s','0-100 km/h']},
+  {id:'apex-r',      name:'Luxa Apex R',       cat:'sports',price:98000, stat1:['330 km/h','Top Speed'],    stat2:['3.1s','0-100 km/h']},
+  {id:'raze-coupe',  name:'Luxa Raze Coupe',   cat:'sports',price:64000, stat1:['290 km/h','Top Speed'],    stat2:['3.9s','0-100 km/h']},
+  {id:'eon-ev',      name:'Luxa Eon EV',       cat:'ev',    price:44500, stat1:['560 km','Range (WLTP)'],   stat2:['4.6s','0-100 km/h']},
+  {id:'nova-ev',     name:'Luxa Nova EV',      cat:'ev',    price:36500, stat1:['480 km','Range (WLTP)'],   stat2:['5.4s','0-100 km/h']},
+  {id:'flux-gte',    name:'Luxa Flux GT-E',    cat:'ev',    price:58000, stat1:['540 km','Range (WLTP)'],   stat2:['3.7s','0-100 km/h']},
+  {id:'drift-ev',    name:'Luxa Drift EV',     cat:'ev',    price:33000, stat1:['420 km','Range (WLTP)'],   stat2:['6.1s','0-100 km/h']},
+  {id:'zenith-ev',   name:'Luxa Zenith EV',    cat:'ev',    price:82000, stat1:['650 km','Range (WLTP)'],   stat2:['3.2s','0-100 km/h']},
+];
+
+/* Body-type classification — supplemental to VEHICLES, used only for the body-type pill filter. */
+const BODY_TYPE={
+  'phantom-x':'sedan','aria-s':'sedan','meridian':'sedan','solis':'sedan',
+  'vertex-suv':'suv','atlas-suv':'suv','ridgeline-x':'suv','horizon-7':'suv','terra-gx':'suv','summit-pro':'suv',
+  'velocity-gt':'coupe','apex-r':'coupe','raze-coupe':'coupe',
+  'eon-ev':'coupe','nova-ev':'hatchback','flux-gte':'coupe','drift-ev':'hatchback','zenith-ev':'convertible',
+};
+const CAT_LABELS={sedan:'Luxury Sedans',suv:'SUVs',sports:'Sports Cars',ev:'Electric Vehicles'};
+
+const favs=new Set(JSON.parse(localStorage.getItem('luxaFavs')||'[]'));
+
+/* ── Filter state ── */
+const params=new URLSearchParams(window.location.search);
+let state={
+  cat: params.get('cat')||'',
+  type: params.get('type')||'',
+  q:'',
+  compareMode: params.get('compare')==='1',
+};
+const compareSelected=new Set();
+
+function vehicleIcon(){
+  return `<svg width="64" height="64" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path d="M3 13l1.5-5A2 2 0 0 1 6.4 6.5h11.2a2 2 0 0 1 1.9 1.5L21 13"/><rect x="2" y="13" width="20" height="6" rx="2"/><circle cx="7" cy="19" r="1.5"/><circle cx="17" cy="19" r="1.5"/></svg>`;
+}
+
+function applyFilters(){
+  return VEHICLES.filter(v=>{
+    if(state.cat && v.cat!==state.cat) return false;
+    if(state.type && BODY_TYPE[v.id]!==state.type) return false;
+    if(state.q && !v.name.toLowerCase().includes(state.q.toLowerCase())) return false;
+    return true;
+  });
+}
+
+function renderTabs(){
+  document.querySelectorAll('#tabRow .tab-btn').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.cat===state.cat);
+  });
+}
+function renderPills(){
+  document.querySelectorAll('#pillRow .pill').forEach(btn=>{
+    btn.classList.toggle('active', btn.dataset.type===state.type);
+  });
+}
+
+function renderVehicles(){
+  const list=applyFilters();
+  const grid=document.getElementById('vehGrid');
+  grid.classList.toggle('compare-mode', state.compareMode);
+
+  document.getElementById('resultsCount').textContent=`${list.length} vehicle${list.length===1?'':'s'}`;
+  if(state.cat) document.getElementById('resultsSubtitle').textContent=`Showing ${CAT_LABELS[state.cat]}.`;
+  else if(state.type) document.getElementById('resultsSubtitle').textContent=`Showing ${state.type.charAt(0).toUpperCase()+state.type.slice(1)} body type.`;
+  else document.getElementById('resultsSubtitle').textContent='Browse the full range of Luxa vehicles.';
+
+  if(!list.length){
+    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1;">
+      <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <p>No vehicles match your filters.</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML=list.map(v=>`
+    <div class="veh-card" data-id="${v.id}">
+      <div class="veh-img">
+        ${vehicleIcon()}
+        <button class="veh-check ${compareSelected.has(v.id)?'checked':''}" data-compare="${v.id}" aria-label="Select for comparison">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>
+        <button class="veh-fav ${favs.has(v.id)?'active':''}" data-id="${v.id}" aria-label="Save vehicle">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 21s-7-4.5-9.5-9A5.5 5.5 0 0 1 12 6a5.5 5.5 0 0 1 9.5 6c-2.5 4.5-9.5 9-9.5 9z"/></svg>
+        </button>
+      </div>
+      <div class="veh-body">
+        <div class="veh-top"><span class="veh-name">${v.name}</span><span class="veh-price">$${v.price.toLocaleString()}</span></div>
+        <div class="veh-stats">
+          <div class="veh-stat"><b>${v.stat1[0]}</b>${v.stat1[1]}</div>
+          <div class="veh-stat"><b>${v.stat2[0]}</b>${v.stat2[1]}</div>
+        </div>
+        <div class="veh-actions">
+          <a href="vehicle-details.html?id=${v.id}" class="va-btn">View Details</a>
+          <button class="va-btn solid" data-book="${v.id}">Book Test Drive</button>
+        </div>
+      </div>
+    </div>`).join('');
+
+  document.querySelectorAll('.veh-fav').forEach(btn=>btn.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    const id=btn.dataset.id;
+    if(favs.has(id)){favs.delete(id);} else {favs.add(id); toast('Saved to your favorites.','success');}
+    localStorage.setItem('luxaFavs',JSON.stringify([...favs]));
+    btn.classList.toggle('active');
+  }));
+  document.querySelectorAll('[data-book]').forEach(btn=>btn.addEventListener('click',()=>openBooking(btn.dataset.book)));
+  document.querySelectorAll('[data-compare]').forEach(btn=>btn.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    toggleCompare(btn.dataset.compare);
+  }));
+}
+
+/* ── Category tabs / body-type pills / search wiring ── */
+document.querySelectorAll('#tabRow .tab-btn').forEach(btn=>btn.addEventListener('click',()=>{
+  state.cat=btn.dataset.cat;
+  renderTabs(); renderVehicles();
+}));
+document.querySelectorAll('#pillRow .pill').forEach(btn=>btn.addEventListener('click',()=>{
+  state.type = state.type===btn.dataset.type ? '' : btn.dataset.type;
+  renderPills(); renderVehicles();
+}));
+document.getElementById('catalogSearch').addEventListener('input',e=>{
+  state.q=e.target.value.trim();
+  renderVehicles();
+});
+
+/* ── Compare mode ── */
+function setCompareMode(on){
+  state.compareMode=on;
+  document.getElementById('compareToggleLabel').textContent = on ? 'Exit Compare' : 'Compare Vehicles';
+  if(!on){ compareSelected.clear(); updateCompareBar(); }
+  renderVehicles();
+}
+document.getElementById('compareToggleBtn').addEventListener('click',()=>setCompareMode(!state.compareMode));
+
+function toggleCompare(id){
+  if(compareSelected.has(id)){
+    compareSelected.delete(id);
+  }else{
+    if(compareSelected.size>=4){ toast('You can compare up to 4 vehicles at a time.','error'); return; }
+    compareSelected.add(id);
+  }
+  renderVehicles();
+  updateCompareBar();
+}
+
+function updateCompareBar(){
+  const bar=document.getElementById('compareBar');
+  const n=compareSelected.size;
+  document.getElementById('compareBarLabel').textContent=`Compare (${n})`;
+  document.getElementById('compareChips').innerHTML=[...compareSelected].map(id=>{
+    const v=VEHICLES.find(x=>x.id===id);
+    return `<span class="compare-chip">${v.name}<button data-remove="${id}" aria-label="Remove">✕</button></span>`;
+  }).join('');
+  document.querySelectorAll('[data-remove]').forEach(b=>b.addEventListener('click',()=>{
+    compareSelected.delete(b.dataset.remove); renderVehicles(); updateCompareBar();
+  }));
+  document.getElementById('cbGo').disabled = n<2;
+  bar.classList.toggle('show', state.compareMode && n>0);
+}
+document.getElementById('cbClear').addEventListener('click',()=>{compareSelected.clear();renderVehicles();updateCompareBar();});
+document.getElementById('cbGo').addEventListener('click',()=>{
+  if(compareSelected.size<2) return;
+  renderCompareTable();
+  openModal('compareOv');
+});
+
+function renderCompareTable(){
+  const list=[...compareSelected].map(id=>VEHICLES.find(v=>v.id===id));
+  const table=document.getElementById('compareTable');
+  const head=`<tr><th>Spec</th>${list.map(v=>`<th>${v.name}</th>`).join('')}</tr>`;
+  const priceRow=`<tr><td class="row-label">Price</td>${list.map(v=>`<td><b>$${v.price.toLocaleString()}</b></td>`).join('')}</tr>`;
+  const rangeRow=`<tr><td class="row-label">${list[0].stat1[1]}</td>${list.map(v=>`<td>${v.stat1[0]}</td>`).join('')}</tr>`;
+  const zeroRow=`<tr><td class="row-label">0-100 km/h</td>${list.map(v=>`<td>${v.stat2[0]}</td>`).join('')}</tr>`;
+  const catRow=`<tr><td class="row-label">Category</td>${list.map(v=>`<td>${CAT_LABELS[v.cat]}</td>`).join('')}</tr>`;
+  table.innerHTML=head+priceRow+rangeRow+zeroRow+catRow;
+}
+
+/* ── Search (topbar global search) ── */
+const SEARCH_INDEX=[
+  ...VEHICLES.map(v=>({group:'Vehicles',label:v.name,href:`vehicle-details.html?id=${v.id}`})),
+  {group:'Support',label:'FAQ — Frequently Asked Questions',href:'faq.html'},
+  {group:'Support',label:'Contact Support',href:'support.html'},
+  {group:'Services',label:'Schedule a Service',href:'services.html'},
+  {group:'Community',label:'Community Hub',href:'community.html'},
+];
+const searchInput=document.getElementById('searchInput'),searchResults=document.getElementById('searchResults');
+function renderSearch(q){
+  if(!q){ searchResults.classList.remove('open'); return; }
+  const matches=SEARCH_INDEX.filter(it=>it.label.toLowerCase().includes(q.toLowerCase()));
+  if(!matches.length){ searchResults.innerHTML='<div class="sr-empty">No results for "'+q+'"</div>'; searchResults.classList.add('open'); return; }
+  const groups={};
+  matches.forEach(m=>{(groups[m.group]=groups[m.group]||[]).push(m);});
+  searchResults.innerHTML=Object.entries(groups).map(([g,items])=>`
+    <div class="sr-group">${g}</div>
+    ${items.map(it=>`<a class="sr-item" href="${it.href}"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/></svg>${it.label}</a>`).join('')}`).join('');
+  searchResults.classList.add('open');
+}
+searchInput.addEventListener('input',e=>renderSearch(e.target.value.trim()));
+searchInput.addEventListener('focus',e=>{if(e.target.value.trim())renderSearch(e.target.value.trim());});
+document.addEventListener('click',e=>{if(!e.target.closest('.search-wrap'))searchResults.classList.remove('open');});
+
+/* ── Modals ── */
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>b.closest('.modal-ov').classList.remove('open')));
+document.querySelectorAll('.modal-ov').forEach(ov=>ov.addEventListener('click',e=>{if(e.target===ov)ov.classList.remove('open');}));
+
+/* ── Book test drive ── */
+function openBooking(prefillId){
+  const sel=document.getElementById('bookVehicle');
+  sel.innerHTML=VEHICLES.map(v=>`<option value="${v.id}" ${v.id===prefillId?'selected':''}>${v.name}</option>`).join('');
+  openModal('bookOv');
+}
+document.getElementById('bookForm').addEventListener('submit',async(e)=>{
+  e.preventDefault();
+  const vName=document.getElementById('bookVehicle').selectedOptions[0].textContent;
+  const dealer=document.getElementById('bookDealer').value;
+  const date=document.getElementById('bookDate').value;
+  closeModal('bookOv');
+  toast(`Test drive for ${vName} requested at ${dealer}.`,'success');
+  NOTIFS.unshift({ic:'✅',title:`Your test drive booking for ${vName} has been confirmed.`,time:'Just now',unread:true});
+  renderNotifs();
+  // Persist to Firestore once configured
+  if(FB_CONFIG.apiKey){
+    try{
+      const {auth}=await getFirebase();
+      if(auth.currentUser){
+        const {getFirestore,collection,addDoc,serverTimestamp}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+        const db=getFirestore(_app);
+        await addDoc(collection(db,'users',auth.currentUser.uid,'bookings'),{vehicle:vName,dealer,date,createdAt:serverTimestamp()});
+      }
+    }catch(err){ /* non-fatal — booking already confirmed in UI */ }
+  }
+});
+
+/* ── Init ── */
+if(state.compareMode) setCompareMode(true);
+renderTabs();
+renderPills();
+renderVehicles();
+updateCompareBar();
+</script>
+</body>
+</html>
