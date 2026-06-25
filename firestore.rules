@@ -6,8 +6,8 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == uid;
     }
 
-    // /users/{uid} — profile, membership, recovery data. Owner only, and even
-    // the owner can't rewrite their own role/isActive/clubPoints fields —
+    // /users/{uid} - profile, membership, recovery data. Owner only, and even
+    // the owner can't rewrite their own role/isActive/clubPoints fields -
     // those are admin-controlled and must never be client-writable.
     match /users/{uid} {
       allow read: if isOwner(uid);
@@ -38,7 +38,7 @@ service cloud.firestore {
       }
     }
 
-    // /support_tickets/{id} — each doc carries the owner's uid as a field
+    // /support_tickets/{id} - each doc carries the owner's uid as a field
     // (it's a top-level collection, not a /users/{uid} subcollection).
     match /support_tickets/{ticketId} {
       allow read: if request.auth != null && resource.data.uid == request.auth.uid;
@@ -46,7 +46,7 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // /community_posts/{id} — public feed. Anyone can read; signed-in users
+    // /community_posts/{id} - public feed. Anyone can read; signed-in users
     // can post, and can only ever touch the like/comment fields on posts
     // they don't own (no edits to someone else's text/author).
     match /community_posts/{postId} {
