@@ -6,9 +6,26 @@ service cloud.firestore {
       return request.auth != null && request.auth.uid == uid;
     }
 
-    // /users/{uid} — profile, membership, recovery data. Owner only.
+    // /users/{uid} — profile, membership, recovery data. Owner only, and even
+    // the owner can't rewrite their own role/isActive/clubPoints fields —
+    // those are admin-controlled and must never be client-writable.
     match /users/{uid} {
-      allow read, write: if isOwner(uid);
+      allow read: if isOwner(uid);
+
+      allow create: if isOwner(uid)
+                    && request.resource.data.uid == uid
+                    && request.resource.data.role == 'member'
+                    && request.resource.data.isActive == true
+                    && request.resource.data.keys().hasOnly([
+                         'uid','email','displayName','country','luzaId',
+                         'role','isActive','recoveryQuestions','createdAt','updatedAt'
+                       ]);
+
+      allow update: if isOwner(uid)
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['displayName','country','notificationPrefs','updatedAt']);
+
+      allow delete: if false;
 
       match /garage/{docId} {
         allow read, write: if isOwner(uid);

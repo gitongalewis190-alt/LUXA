@@ -501,8 +501,8 @@ button{font-family:inherit;}
           <h3>Join LUXA Club</h3>
           <p>Exclusive rewards, experiences and more.</p>
           <div class="club-stats">
-            <div><b>1,250 pts</b><span>Gold Member</span></div>
-            <span class="club-badge">GOLD</span>
+            <div><b id="dashClubPts">0 pts</b><span id="dashClubTierLabel">Member</span></div>
+            <span class="club-badge" id="dashClubBadge">BRONZE</span>
           </div>
           <a href="membership.html" class="btn btn-blue" style="width:100%;justify-content:center;">View Benefits</a>
         </div>
@@ -621,6 +621,21 @@ async function getFirebase(){
   return {auth:_auth};
 }
 
+/* ── Club tier lookup (kept in sync with membership.html) ── */
+const TIERS=[
+  {key:'bronze',name:'Bronze',min:0,max:499},
+  {key:'silver',name:'Silver',min:500,max:1199},
+  {key:'gold',name:'Gold',min:1200,max:2999},
+  {key:'platinum',name:'Platinum',min:3000,max:Infinity},
+];
+function tierForPoints(pts){ return TIERS.find(t=>pts>=t.min&&pts<=t.max) || TIERS[0]; }
+function renderClubCard(pts){
+  const tier=tierForPoints(pts);
+  document.getElementById('dashClubPts').textContent=pts.toLocaleString()+' pts';
+  document.getElementById('dashClubTierLabel').textContent=tier.name+' Member';
+  document.getElementById('dashClubBadge').textContent=tier.name.toUpperCase();
+}
+
 /* ── Auth gate ── */
 (async function authGate(){
   if(!FB_CONFIG.apiKey){
@@ -629,16 +644,43 @@ async function getFirebase(){
     document.getElementById('welcomeName').textContent='Antonio';
     document.getElementById('profileName').textContent='Antonio';
     document.getElementById('avatarInit').textContent='A';
+    renderClubCard(0);
     return;
   }
   const {auth}=await getFirebase();
   const {onAuthStateChanged,signOut}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
-  onAuthStateChanged(auth,(user)=>{
+  onAuthStateChanged(auth,async(user)=>{
     if(!user){ window.location.href='login.html'; return; }
     const name=(user.displayName||user.email||'there').split(' ')[0].split('@')[0];
     document.getElementById('welcomeName').textContent=name;
     document.getElementById('profileName').textContent=name;
     document.getElementById('avatarInit').textContent=name.charAt(0).toUpperCase();
+    let pts=0; // honest default for a real member with no recorded activity yet
+    try{
+      const {getFirestore,doc,getDoc,setDoc,serverTimestamp}=await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js');
+      const db=getFirestore(_app);
+      const ref=doc(db,'users',user.uid);
+      const snap=await getDoc(ref);
+      if(snap.exists()){
+        if(typeof snap.data().clubPoints==='number') pts=snap.data().clubPoints;
+      }else{
+        // Self-heal: the profile doc may not have landed yet (e.g. signup
+        // redirected before the background Firestore write finished).
+        await setDoc(ref,{
+          uid:               user.uid,
+          email:             user.email||'',
+          displayName:       user.displayName||'',
+          country:           '',
+          luzaId:            `luxa_${(user.displayName||'user').toLowerCase().replace(/[^a-z0-9]/g,'_').slice(0,20)}_${user.uid.slice(-6)}`,
+          role:              'member',
+          isActive:          true,
+          recoveryQuestions: [],
+          createdAt:         serverTimestamp(),
+          updatedAt:         serverTimestamp(),
+        });
+      }
+    }catch(err){ /* Firestore not reachable yet — fall back to 0 pts, never fabricate a balance */ }
+    renderClubCard(pts);
   });
   window._luxaSignOut=async()=>{ await signOut(auth); };
 })();
@@ -672,14 +714,8 @@ setupPanel('bellBtn','bellPanel');
 setupPanel('profileBtn','profilePanel');
 document.addEventListener('click',()=>document.querySelectorAll('.panel.open').forEach(p=>p.classList.remove('open')));
 
-/* ── Notifications ── */
-const NOTIFS=[
-  {ic:'🔧',title:'Your Luxa Phantom X service is due in 7 days.',time:'2h ago',unread:true},
-  {ic:'✅',title:'Your test drive booking has been confirmed.',time:'5h ago',unread:true},
-  {ic:'🚗',title:'The new Luxa Eon EV has just launched.',time:'1d ago',unread:true},
-  {ic:'💬',title:'Someone mentioned you in the Community hub.',time:'2d ago',unread:false},
-  {ic:'🎁',title:'Exclusive LUXA Club offer: 5% off your next service.',time:'4d ago',unread:false},
-];
+/* ── Notifications — real activity only, populated as it happens (e.g. booking confirmations below) ── */
+const NOTIFS=[];
 function renderNotifs(){
   const list=document.getElementById('notifList');
   const unread=NOTIFS.filter(n=>n.unread).length;
