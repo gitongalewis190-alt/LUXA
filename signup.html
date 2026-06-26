@@ -93,6 +93,11 @@
     /* Select caret */
     .fwrap.sel::after{content:'';position:absolute;right:14px;top:50%;transform:translateY(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid rgba(240,244,255,.35);pointer-events:none;}
     select option{background:#0d1428;color:#F0F4FF;}
+    /* Phone field (dial code badge + input) */
+    .fwrap.phone-wrap{display:flex;align-items:center;background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.1);border-radius:13px;transition:border-color .2s,box-shadow .2s,background .2s;}
+    .fwrap.phone-wrap:focus-within{border-color:rgba(0,160,255,.5);box-shadow:0 0 0 3px rgba(0,160,255,.1);background:rgba(255,255,255,.09);}
+    .phone-code{padding:13px 0 13px 16px;font-size:15px;font-weight:600;color:rgba(240,244,255,.55);white-space:nowrap;user-select:none;}
+    .fwrap.phone-wrap input{border:none !important;background:transparent !important;padding-left:8px;box-shadow:none !important;}
 
     /* ── Recovery section ── */
     .section-label{font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:rgba(240,244,255,.35);padding:14px 0 10px;border-top:1px solid rgba(255,255,255,.07);margin-top:8px;}
@@ -123,9 +128,20 @@
     .cfoot a{color:rgba(0,168,255,.75);text-decoration:none;}
     .cfoot a:hover{color:#00D4FF;}
 
+    /* ── Success overlay ── */
+    .success-ov{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;background:rgba(3,5,12,.72);backdrop-filter:blur(8px);animation:fIn .25s ease-out both;}
+    @keyframes fIn{from{opacity:0}to{opacity:1}}
+    .success-card{width:100%;max-width:380px;text-align:center;background:rgba(8,13,28,.88);backdrop-filter:blur(28px) saturate(1.2);border:1px solid rgba(255,255,255,.12);border-radius:26px;padding:40px 32px;box-shadow:0 32px 90px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.1);animation:rise .5s cubic-bezier(.16,1,.3,1) both;}
+    .success-icon{width:64px;height:64px;margin:0 auto 18px;border-radius:50%;background:rgba(0,200,100,.15);border:1px solid rgba(0,200,100,.3);color:#5dffb0;display:flex;align-items:center;justify-content:center;}
+    .success-icon svg{width:34px;height:34px;}
+    .success-card h2{font-size:23px;font-weight:700;letter-spacing:-.02em;margin-bottom:10px;}
+    .success-sub{font-size:14.5px;color:rgba(240,244,255,.78);margin-bottom:8px;}
+    .success-note{font-size:12.5px;color:rgba(240,244,255,.4);margin-bottom:24px;line-height:1.5;}
+    .success-card .btn{margin-top:0;}
+
     /* ── Reduced motion ── */
     @media(prefers-reduced-motion:reduce){
-      .card,.toast{animation:none;}
+      .card,.toast,.success-ov,.success-card{animation:none;}
       .spin{animation:none;border-top-color:#fff;}
     }
   </style>
@@ -188,6 +204,19 @@
 
 <!-- ── Toast container ── -->
 <div class="toasts" id="toasts" aria-live="polite" aria-atomic="false"></div>
+
+<!-- ── Success overlay ── -->
+<div class="success-ov" id="success-ov" hidden>
+  <div class="success-card">
+    <div class="success-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12.5l2.8 2.8L16 9.5"/></svg>
+    </div>
+    <h2>Account created!</h2>
+    <p class="success-sub" id="success-sub">Welcome to LUXA. Your journey starts now.</p>
+    <p class="success-note">We've sent a verification link to your email — confirm it whenever you get a chance.</p>
+    <button type="button" class="btn" id="success-dive">Dive In →</button>
+  </div>
+</div>
 
 <!-- ── Page ── -->
 <div class="page">
@@ -305,7 +334,16 @@
           </div>
         </div>
 
-        <!-- 3. Email -->
+        <!-- 3. Phone Number -->
+        <div class="field">
+          <label class="flabel" for="phone">Phone Number</label>
+          <div class="fwrap phone-wrap">
+            <span class="phone-code" id="phone-code">+--</span>
+            <input type="tel" id="phone" name="phone" inputmode="tel" autocomplete="tel" placeholder="Phone number" required />
+          </div>
+        </div>
+
+        <!-- 4. Email -->
         <div class="field">
           <label class="flabel" for="email">Email</label>
           <div class="fwrap">
@@ -314,7 +352,7 @@
           </div>
         </div>
 
-        <!-- 4. Password -->
+        <!-- 5. Password -->
         <div class="field">
           <label class="flabel" for="pw">Password</label>
           <div class="fwrap">
@@ -332,7 +370,7 @@
           <div class="pw-count" id="pw-count">0 / 8 characters</div>
         </div>
 
-        <!-- 5. Confirm Password -->
+        <!-- 6. Confirm Password -->
         <div class="field">
           <label class="flabel" for="cpw">Confirm Password</label>
           <div class="fwrap">
@@ -515,6 +553,10 @@
     'auth/user-disabled':'This account has been disabled.',
     'auth/popup-closed-by-user':'Sign-in window was closed.',
     'auth/popup-blocked':'Pop-up blocked. Please allow pop-ups.',
+    'auth/unauthorized-domain':'This domain isn\'t authorized for sign-in yet. Please contact support.',
+    'auth/operation-not-allowed':'Google sign-in isn\'t enabled yet. Please contact support.',
+    'auth/internal-error':'Something went wrong. Please try again.',
+    'auth/timeout':'That took too long. Check your connection and try again.',
   };
 
   /* ── Firebase lazy loader ── */
@@ -590,18 +632,43 @@
   });
 
   /* ── DOM refs ── */
-  const nameEl    = document.getElementById('name');
-  const countryEl = document.getElementById('country');
-  const emailEl   = document.getElementById('email');
-  const pwEl      = document.getElementById('pw');
-  const cpwEl     = document.getElementById('cpw');
-  const a1El      = document.getElementById('a1');
-  const a2El      = document.getElementById('a2');
-  const a3El      = document.getElementById('a3');
-  const btn       = document.getElementById('btn');
-  const pwCount   = document.getElementById('pw-count');
-  const form      = document.getElementById('form');
-  const hp        = form.querySelector('[name="website"]');
+  const nameEl     = document.getElementById('name');
+  const countryEl  = document.getElementById('country');
+  const phoneEl    = document.getElementById('phone');
+  const phoneCodeEl= document.getElementById('phone-code');
+  const emailEl    = document.getElementById('email');
+  const pwEl       = document.getElementById('pw');
+  const cpwEl      = document.getElementById('cpw');
+  const a1El       = document.getElementById('a1');
+  const a2El       = document.getElementById('a2');
+  const a3El       = document.getElementById('a3');
+  const btn        = document.getElementById('btn');
+  const pwCount    = document.getElementById('pw-count');
+  const form       = document.getElementById('form');
+  const hp         = form.querySelector('[name="website"]');
+
+  /* ── Dial codes, aligned to the Country select above ── */
+  const DIAL_CODES = {
+    'Afghanistan':'+93','Albania':'+355','Algeria':'+213','Argentina':'+54','Australia':'+61',
+    'Austria':'+43','Bangladesh':'+880','Belgium':'+32','Bolivia':'+591','Brazil':'+55',
+    'Bulgaria':'+359','Cambodia':'+855','Canada':'+1','Chile':'+56','China':'+86',
+    'Colombia':'+57','Croatia':'+385','Czech Republic':'+420','Denmark':'+45','Ecuador':'+593',
+    'Egypt':'+20','Ethiopia':'+251','Finland':'+358','France':'+33','Germany':'+49',
+    'Ghana':'+233','Greece':'+30','Guatemala':'+502','Hungary':'+36','India':'+91',
+    'Indonesia':'+62','Iran':'+98','Iraq':'+964','Ireland':'+353','Israel':'+972',
+    'Italy':'+39','Japan':'+81','Jordan':'+962','Kenya':'+254','Malaysia':'+60',
+    'Mexico':'+52','Morocco':'+212','Netherlands':'+31','New Zealand':'+64','Nigeria':'+234',
+    'Norway':'+47','Pakistan':'+92','Panama':'+507','Peru':'+51','Philippines':'+63',
+    'Poland':'+48','Portugal':'+351','Romania':'+40','Russia':'+7','Saudi Arabia':'+966',
+    'South Africa':'+27','South Korea':'+82','Spain':'+34','Sri Lanka':'+94','Sweden':'+46',
+    'Switzerland':'+41','Taiwan':'+886','Tanzania':'+255','Thailand':'+66','Turkey':'+90',
+    'Uganda':'+256','Ukraine':'+380','United Arab Emirates':'+971','United Kingdom':'+44','United States':'+1',
+    'Venezuela':'+58','Vietnam':'+84','Zimbabwe':'+263',
+  };
+  function updatePhoneCode() {
+    phoneCodeEl.textContent = DIAL_CODES[countryEl.value] || '+--';
+  }
+  countryEl.addEventListener('change', updatePhoneCode);
 
   /* ── Eye toggles ── */
   function makeEyeToggle(eyeId, inputEl) {
@@ -644,6 +711,7 @@
                   && qVals[1] !== qVals[2];
     const ok = nameEl.value.trim().length > 0
             && countryEl.value !== ''
+            && phoneEl.value.replace(/\D/g,'').length >= 6
             && emailRe.test(emailEl.value.trim())
             && pwEl.value.length >= 8
             && cpwEl.value === pwEl.value
@@ -655,13 +723,33 @@
     btn.disabled = !ok;
   }
 
-  [nameEl, countryEl, emailEl, pwEl, cpwEl, a1El, a2El, a3El].forEach(el => {
+  [nameEl, countryEl, phoneEl, emailEl, pwEl, cpwEl, a1El, a2El, a3El].forEach(el => {
     el.addEventListener('input', () => {
       if (el === pwEl) updatePwCount();
       validate();
     });
     el.addEventListener('change', validate);
   });
+
+  /* ── Hard timeout so a stalled network call can never hang the UI forever ── */
+  function withTimeout(promise, ms) {
+    return Promise.race([
+      promise,
+      new Promise((_, reject) => setTimeout(() => reject({ code: 'auth/timeout' }), ms)),
+    ]);
+  }
+
+  /* ── Success banner ── */
+  function showSuccessBanner(name) {
+    document.getElementById('success-sub').textContent = name
+      ? `Welcome, ${name}. Your journey starts now.`
+      : 'Welcome to LUXA. Your journey starts now.';
+    const ov = document.getElementById('success-ov');
+    ov.hidden = false;
+    const diveIn = () => { window.location.href = 'dashboard.html'; };
+    document.getElementById('success-dive').onclick = diveIn;
+    setTimeout(diveIn, 6000);
+  }
 
   /* ── Submit ── */
   form.addEventListener('submit', async (e) => {
@@ -671,6 +759,7 @@
 
     const name    = nameEl.value.trim();
     const country = countryEl.value;
+    const phone   = `${DIAL_CODES[country] || ''} ${phoneEl.value.trim()}`.trim();
     const email   = emailEl.value.trim();
     const pw      = pwEl.value;
     const recoveryQuestions = [
@@ -686,22 +775,40 @@
       const { auth } = await getFirebase();
       const {
         createUserWithEmailAndPassword,
+        signInWithEmailAndPassword,
         updateProfile,
+        sendEmailVerification,
       } = await import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js');
 
-      const cred = await createUserWithEmailAndPassword(auth, email, pw);
-      const user = cred.user;
+      let user;
+      try {
+        const cred = await withTimeout(createUserWithEmailAndPassword(auth, email, pw), 20000);
+        user = cred.user;
+      } catch (createErr) {
+        // If the account creation call hung/timed out client-side but actually
+        // succeeded server-side, Firebase now reports the email as taken. Sign
+        // the user straight into the account they just created instead of
+        // leaving them stuck or making them re-submit a "taken" email.
+        if (createErr && createErr.code === 'auth/email-already-in-use') {
+          try {
+            const cred = await signInWithEmailAndPassword(auth, email, pw);
+            user = cred.user;
+          } catch (_signInErr) {
+            throw createErr;
+          }
+        } else {
+          throw createErr;
+        }
+      }
 
-      await updateProfile(user, { displayName: name }).catch(() => {});
+      // The account now exists — never let a slow/unreachable network call
+      // leave the user stuck on "Creating account…" again. Everything past
+      // this point runs fire-and-forget in the background.
+      updateProfile(user, { displayName: name }).catch(() => {});
+      sendEmailVerification(user).catch(() => {});
+      writeUserDoc(user, { country, phone, recoveryQuestions }).catch(() => {});
 
-      // The account now exists — never let a slow/unreachable Firestore
-      // connection leave the user stuck on "Creating account…". The profile
-      // doc write continues in the background; dashboard.html self-heals
-      // and creates it on next load if it didn't land in time.
-      writeUserDoc(user, { country, recoveryQuestions }).catch(() => {});
-
-      toast('Account created! Redirecting…', 'success');
-      setTimeout(() => { window.location.href = 'dashboard.html'; }, 900);
+      showSuccessBanner(name);
     } catch (err) {
       toast(FERR[err.code] || err.message || 'Something went wrong. Try again.', 'error');
       btn.disabled = false;
@@ -722,6 +829,7 @@
       email:             user.email || '',
       displayName:       user.displayName || '',
       country:           extra.country || '',
+      phone:             extra.phone || '',
       luzaId:            `luxa_${(user.displayName||'user').toLowerCase().replace(/[^a-z0-9]/g,'_').slice(0,20)}_${user.uid.slice(-6)}`,
       role:              'member',
       isActive:          true,
@@ -753,8 +861,7 @@
       const result = await getRedirectResult(auth);
       if (!result || !result.user) return;
       writeUserDoc(result.user, {}).catch(() => {});
-      toast('Account created! Redirecting…', 'success');
-      setTimeout(() => { window.location.href = 'dashboard.html'; }, 900);
+      showSuccessBanner(result.user.displayName || '');
     } catch (err) {
       if (err && err.code) toast(FERR[err.code] || err.message || 'Sign-in failed.', 'error');
     }

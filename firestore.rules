@@ -17,13 +17,13 @@ service cloud.firestore {
                     && request.resource.data.role == 'member'
                     && request.resource.data.isActive == true
                     && request.resource.data.keys().hasOnly([
-                         'uid','email','displayName','country','luzaId',
+                         'uid','email','displayName','country','phone','luzaId',
                          'role','isActive','recoveryQuestions','createdAt','updatedAt'
                        ]);
 
       allow update: if isOwner(uid)
                     && request.resource.data.diff(resource.data).affectedKeys()
-                         .hasOnly(['displayName','country','notificationPrefs','updatedAt']);
+                         .hasOnly(['displayName','country','phone','notificationPrefs','updatedAt']);
 
       allow delete: if false;
 
